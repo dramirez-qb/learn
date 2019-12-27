@@ -1,8 +1,11 @@
-node('master') {
-  stage ('build') {
+node {
+  stage ('Build') {
     openshiftBuild(buildConfig: 'learn', showBuildLogs: 'true')
   }
-  stage ('deploy') {
+  stage ('Deploy') {
     openshiftDeploy(deploymentConfig: 'learn')
+  }
+  stage('Approve') {
+    input 'Promote to production?'
   }
 }
