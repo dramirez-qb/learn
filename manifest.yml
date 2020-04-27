@@ -1,0 +1,6 @@
+---
+applications:
+- name: learn
+  random-route: true
+  memory: 128M
+ 
