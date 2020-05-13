@@ -12,6 +12,7 @@ image: dxas90/ci-tools:v0.0.1
     # command: ["dockerd-entrypoint.sh"]
 stages:
   - test
+  - cleanup
 test:
   stage: test
   before_script:
@@ -24,7 +25,7 @@ test:
   after_script:
     - kind delete cluster
 cleanup:
-  stage: test
+  stage: cleanup
     - kind delete cluster
   rules:
     - when: always
