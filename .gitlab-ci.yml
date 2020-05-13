@@ -1,21 +1,19 @@
-image: docker:stable
+image: dxas90/ci-tools:v0.0.1
 variables:
   KUBECTL: v1.18.2
   KIND: v0.8.1
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_DRIVER: overlay2
 services:
-  - docker:dind
+  - docker:19.03.8-dind
 stages:
   - test
 test:
   stage: test
-  script:
-    - apk add -U wget
-    - wget -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/${KIND}/kind-linux-amd64
-    - chmod +x /usr/local/bin/kind
-    - wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL}/bin/linux/amd64/kubectl
-    - chmod +x /usr/local/bin/kubectl
+  before_script:
     - kind create cluster --config=./.gitlab/kind-config.yaml
     - sed -i -E -e 's/localhost|0\.0\.0\.0/docker/g' "$HOME/.kube/config"
+  script:
     - kubectl get nodes -o wide
     - kubectl get pods --all-namespaces -o wide
     - kubectl get services --all-namespaces -o wide
