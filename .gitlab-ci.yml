@@ -26,6 +26,7 @@ test:
     - kind delete cluster
 cleanup:
   stage: cleanup
+  script:
     - kind delete cluster
   rules:
     - when: always
