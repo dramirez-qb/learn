@@ -1,4 +1,3 @@
-# https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4566#note_199261985
 image: dxas90/ci-tools:v0.0.1
 variables:
   KUBECTL: v1.18.2
@@ -6,8 +5,8 @@ variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR=''
-services:
-  - name: docker:19.03.8-dind
+services: # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4566#note_199261985
+  - name: docker:dind
     entrypoint: ["env", "-u", "DOCKER_HOST"]
     command: ["dockerd-entrypoint.sh"]
 stages:
