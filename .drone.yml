@@ -34,7 +34,7 @@ steps:
   image: "plugins/docker"
   settings:
     repo: "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}"
-    tags: ["latest"]
+    tags: ["latest","$${LAST_COMMIT_HASH}"]
     username:
       from_secret: docker_username
     password:
@@ -44,6 +44,7 @@ steps:
 - name: parse
   image: dxas90/drone-kubectl
   commands:
+    - export APP_IMAGE=$${DRONE_REPO_NAMESPACE}/$${DRONE_REPO_NAME}
     - export LAST_COMMIT_HASH="$${DRONE_COMMIT_SHA::7}"
     - envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
 

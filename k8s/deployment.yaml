@@ -39,7 +39,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: ${APP_NAME}-config
-          image: ${DOCKER_REGISTRY:-docker.io}/library/${APP_NAME}:${LAST_COMMIT_HASH}
+          image: ${APP_IMAGE}:latest
           ports:
             - name: web
               containerPort: 8080
