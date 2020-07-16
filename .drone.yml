@@ -22,10 +22,10 @@ steps:
     - go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
 
 - name: publish
-  image: plugins/docker:linux-amd64
+  image: "plugins/docker"
   settings:
     repo: "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}"
-    tags: [ "${DRONE_COMMIT_SHA:0:7}","${DRONE_BRANCH/\//-}", "latest" ]
+    tags: [ "${LAST_COMMIT_HASH}","${DRONE_BRANCH/\//-}", "latest" ]
     username:
       from_secret: docker_username
     password:
