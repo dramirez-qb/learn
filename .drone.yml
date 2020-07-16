@@ -44,9 +44,9 @@ steps:
       from_secret: kube_config
   commands:
     - env | sort
+    - echo ${PLUGIN_KUBE_CONFIG} | base64 -d /tmp/config
     - cat /tmp/config
-    - echo ${PLUGIN_KUBE_CONFIG} | base64 -d
-    # - kubectl apply -f k8s/deployment_new.yaml -n drone
+    - kubectl apply -f k8s/deployment_new.yaml -n drone
 trigger:
   event:
   - push
