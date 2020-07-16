@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    optimal.app: ${APP_NAME}
+  name: ${APP_NAME}
+spec:
+  ports:
+    - name: "web"
+      port: 80
+      targetPort: 8080
+  selector:
+    optimal.app: ${APP_NAME}
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    optimal.app: ${APP_NAME}
+  name: ${APP_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      optimal.app: ${APP_NAME}
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        optimal.app: ${APP_NAME}
+    spec:
+      containers:
+        - name: ${APP_NAME}
+          envFrom:
+            - configMapRef:
+                name: ${APP_NAME}-config
+          image: ${DOCKER_REGISTRY:-docker.io}/library/${APP_NAME}:${LAST_COMMIT_HASH}
+          ports:
+            - name: web
+              containerPort: 8080
+              protocol: TCP
+          resources: {}
+      # https://kubernetes.io/docs/concepts/containers/images/#referring-to-an-imagepullsecrets-on-a-pod
+      # imagePullSecrets:
+      #   - name: pull-registry
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ${APP_NAME}-config
+data:
+  REDIS_DSN: redis://redis:6379?timeout=0.5
+  REDIS_CLUSTER: redis
+  REDIS_RETRY: "2"
+  REDIS_TIMEOUT_CONNECTION: "1"
+  MONGODB_URL: mongodb://mongodb:27017
+  MAILER_URL: smtp://mail-server:1025
+  LAST_COMMIT_HASH: "${LAST_COMMIT_HASH}"
+  APP_ENV: prod

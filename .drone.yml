@@ -1,0 +1,49 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+environment:
+  LAST_COMMIT_HASH: ${DRONE_COMMIT_SHA::7}
+  APP_NAME: learn
+  GOOS: linux
+  GOARCH: amd64
+  CGO_ENABLED: "0"
+
+steps:
+- name: test
+  image: golang:1.14-alpine
+  commands:
+    - "go test"
+
+- name: build
+  image: golang:1.14-alpine
+  commands:
+    - go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
+
+- name: publish
+  image: plugins/docker:linux-amd64
+  settings:
+    repo: ${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
+    tags: [ "${DRONE_COMMIT_SHA:0:7}","${DRONE_BRANCH/\//-}", "latest" ]
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+
+- name: deliver
+  image: dxas90/drone-kubectl
+  settings:
+    kubernetes_server:
+      from_secret: k8s_server
+    kubernetes_cert:
+      from_secret: k8s_cert
+    kubernetes_token:
+      from_secret: k8s_token
+  commands:
+    - export LAST_COMMIT_HASH="${DRONE_COMMIT_SHA::7}"
+    - envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
+    - kubectl apply -f k8s/deployment_new.yaml
+trigger:
+  event:
+  - push
