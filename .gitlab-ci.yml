@@ -8,6 +8,7 @@ image: dxas90/ci-tools:v0.0.1
   # DOCKER_TLS_CERTDIR: ''
 # services:
   # - name: docker:dind
+    # alias: docker
     # entrypoint: ["env", "-u", "DOCKER_HOST"]
     # command: ["dockerd-entrypoint.sh"]
 stages:
@@ -28,5 +29,4 @@ cleanup:
   stage: cleanup
   script:
     - kind delete cluster
-  rules:
-    - when: always
+  when: always
