@@ -43,7 +43,7 @@ steps:
     kube_config:
       from_secret: kube_config
   commands:
-    - kubectl apply -f k8s/deployment_new.yaml -n deployer
+    - kubectl apply -f k8s/deployment_new.yaml -n drone
 trigger:
   event:
   - push
