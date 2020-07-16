@@ -49,16 +49,10 @@ steps:
 
 - name: deliver
   image: dxas90/drone-kubectl
-  settings:
-    kube_config:
-      from_secret: kube_config
   environment:
     KUBE_CONFIG:
       from_secret: kube_config
   commands:
-    - env | sort
-    - echo $${KUBE_CONFIG} | base64 -d > /tmp/config
-    - cat /tmp/config
     - kubectl apply -f k8s/deployment_new.yaml -n drone
 trigger:
   event:
