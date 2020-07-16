@@ -29,6 +29,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
+    registry: docker.io
 
 - name: deliver
   image: dxas90/drone-kubectl
