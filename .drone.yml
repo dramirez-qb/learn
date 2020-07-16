@@ -38,10 +38,10 @@ steps:
     - envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
 
 - name: deliver
-    image: dxas90/drone-kubectl
-    settings:
-      kube_config:
-        from_secret: kube_config
+  image: dxas90/drone-kubectl
+  settings:
+    kube_config:
+      from_secret: kube_config
   commands:
     - kubectl apply -f k8s/deployment_new.yaml -n deployer
 trigger:
