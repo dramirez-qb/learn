@@ -3,7 +3,7 @@ type: docker
 name: default
 
 environment:
-  LAST_COMMIT_HASH: "5771c91"
+  LAST_COMMIT_HASH: "${DRONE_COMMIT_SHA::7}"
   APP_NAME: learn
   GOOS: linux
   GOARCH: amd64
