@@ -24,7 +24,7 @@ steps:
   image: "plugins/docker"
   settings:
     repo: "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}"
-    tags: [ "${LAST_COMMIT_HASH}", "latest" ]
+    tags: ["latest"]
     username:
       from_secret: docker_username
     password:
