@@ -47,7 +47,8 @@ steps:
     kubernetes_token:
       from_secret: k8s_token
   commands:
-    - kubectl apply -f k8s/deployment_new.yaml -n deployer
+    - kubectl get all --all-namespaces
+#    - kubectl apply -f k8s/deployment_new.yaml -n deployer
 trigger:
   event:
   - push
