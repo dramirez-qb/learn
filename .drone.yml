@@ -10,10 +10,20 @@ environment:
   CGO_ENABLED: "0"
 
 steps:
+- name: dependencies
+  image: golang:1.14-alpine
+  commands:
+    - |
+      go get -v -t -d ./...
+      if [ -f Gopkg.toml ]; then
+          curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          dep ensure
+      fi
+
 - name: test
   image: golang:1.14-alpine
   commands:
-    - "go test"
+    - "go test -v ."
 
 - name: build
   image: golang:1.14-alpine
