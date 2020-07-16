@@ -52,6 +52,8 @@ steps:
   environment:
     KUBE_CONFIG:
       from_secret: kube_config
+  commands:
+    - /bin/kubectl apply -f k8s/deployment_new.yaml -n drone
 trigger:
   event:
   - push
