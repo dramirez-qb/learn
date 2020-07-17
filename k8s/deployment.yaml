@@ -114,32 +114,32 @@ spec:
   selector:
     matchLabels:
       optimal.app: ${APP_NAME}
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: ${APP_NAME}-stripprefix
-  namespace: optimalbit
-spec:
-  stripPrefix:
-    prefixes:
-      - /learn
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: ${APP_NAME}-ingress-route
-  namespace: optimalbit
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: "Host(`k8s.development.local`) && PathPrefix(`/learn`)"
-      kind: Rule
-      services:
-        - name: ${APP_NAME}
-          port: 80                      # line 11
-          namespace: drone              # CI
-      middlewares:
-        - name: ${APP_NAME}-stripprefix # line 118
----
+# ---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: ${APP_NAME}-stripprefix
+#   namespace: optimalbit
+# spec:
+#   stripPrefix:
+#     prefixes:
+#       - /learn
+# ---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: ${APP_NAME}-ingress-route
+#   namespace: optimalbit
+# spec:
+#   entryPoints:
+#     - web
+#   routes:
+#     - match: "Host(`k8s.development.local`) && PathPrefix(`/learn`)"
+#       kind: Rule
+#       services:
+#         - name: ${APP_NAME}
+#           port: 80                      # line 11
+#           namespace: drone              # CI
+#       middlewares:
+#         - name: ${APP_NAME}-stripprefix # line 118
+# ---
