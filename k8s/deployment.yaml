@@ -23,7 +23,7 @@ metadata:
     optimal.app: ${APP_NAME}
   name: ${APP_NAME}
 spec:
-  replicas: 1
+  replicas: 3 
   selector:
     matchLabels:
       optimal.app: ${APP_NAME}
@@ -34,6 +34,13 @@ spec:
       labels:
         optimal.app: ${APP_NAME}
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                optimal.app: ${APP_NAME}
+            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: ${APP_NAME}
           envFrom:
@@ -44,7 +51,30 @@ spec:
             - name: web
               containerPort: 8080
               protocol: TCP
-          resources: {}
+          resources:
+            limits:
+              cpu: 10m
+              memory: 56Mi
+            requests:
+              cpu: 10m
+              memory: 56Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            failureThreshold: 2
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
       # https://kubernetes.io/docs/concepts/containers/images/#referring-to-an-imagepullsecrets-on-a-pod
       # imagePullSecrets:
       #   - name: pull-registry
@@ -65,3 +95,13 @@ data:
   MAILER_URL: smtp://mail-server:1025
   LAST_COMMIT_HASH: "${LAST_COMMIT_HASH}"
   APP_ENV: prod
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: ${APP_NAME}-pdb
+spec:
+  maxUnavailable: 2
+  selector:
+    matchLabels:
+      optimal.app: ${APP_NAME}
