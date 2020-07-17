@@ -9,7 +9,7 @@ spec:
   ports:
     - name: "web"
       port: 80
-      targetPort: 8080
+      targetPort: 8080                         # line 53
   selector:
     optimal.app: ${APP_NAME}
 status:
@@ -50,7 +50,7 @@ spec:
           image: ${APP_IMAGE}:latest
           ports:
             - name: web
-              containerPort: 8080
+              containerPort: 8080                       # line 12
               protocol: TCP
           resources:
             limits:
@@ -86,7 +86,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: ${APP_NAME}-config
+  name: ${APP_NAME}-config                  # line 49
 data:
   REDIS_DSN: redis://redis:6379?timeout=0.5
   REDIS_CLUSTER: redis
@@ -96,6 +96,14 @@ data:
   MAILER_URL: smtp://mail-server:1025
   LAST_COMMIT_HASH: "${LAST_COMMIT_HASH}"
   APP_ENV: prod
+  JAEGER_AGENT_HOST: tracing-agent.optimalbit.svc.cluster.local
+  JAEGER_AGENT_PORT: 6831 
+  JAEGER_SERVICE_NAME: ${APP_NAME}
+  JAEGER_TAGS: "app=${APP_NAME}"
+  JAEGER_SAMPLER_TYPE: "const"
+  JAEGER_SAMPLER_PARAM: 1
+  JAEGER_SAMPLING_ENDPOINT: http://jaeger-agent.optimalbit.svc.cluster.local:5778/sampling
+  JAEGER_REPORTER_LOG_SPANS: "true"
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
@@ -106,3 +114,32 @@ spec:
   selector:
     matchLabels:
       optimal.app: ${APP_NAME}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: ${APP_NAME}-stripprefix
+  namespace: optimalbit
+spec:
+  stripPrefix:
+    prefixes:
+      - /learn
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ${APP_NAME}-ingress-route
+  namespace: optimalbit
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: "Host(`k8s.development.local`) && PathPrefix(`/learn`)"
+      kind: Rule
+      services:
+        - name: ${APP_NAME}
+          port: 80                      # line 11
+          namespace: drone              # CI
+      middlewares:
+        - name: ${APP_NAME}-stripprefix # line 118
+---
