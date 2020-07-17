@@ -33,6 +33,7 @@ spec:
       creationTimestamp: null
       labels:
         optimal.app: ${APP_NAME}
+        team: DevOps
     spec:
       affinity:
         podAntiAffinity:
