@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func xestHelloRoute(t *testing.T) {
+func TestHelloRoute(t *testing.T) {
 	handler := http.HandlerFunc(helloHandler)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/", nil)
@@ -18,7 +18,7 @@ func xestHelloRoute(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "Hello")
 }
 
-func xestPingRoute(t *testing.T) {
+func TestPingRoute(t *testing.T) {
 	handler := http.HandlerFunc(pongHandler)
 
 	w := httptest.NewRecorder()
@@ -29,7 +29,7 @@ func xestPingRoute(t *testing.T) {
 	assert.Equal(t, "pong", w.Body.String())
 }
 
-func xestHealthRoute(t *testing.T) {
+func TestHealthRoute(t *testing.T) {
 	handler := http.HandlerFunc(healthCheckHandler)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/healthz", nil)
