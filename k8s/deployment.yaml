@@ -85,7 +85,6 @@ status: {}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: ${APP_NAME}-config                  # line 49
 data:
   REDIS_DSN: redis://redis:6379?timeout=0.5
@@ -98,10 +97,10 @@ data:
   APP_ENV: prod
   JAEGER_AGENT_HOST: tracing-agent.optimalbit.svc.cluster.local
   JAEGER_AGENT_PORT: "6831" 
-  JAEGER_SERVICE_NAME: ${APP_NAME}
+  JAEGER_SERVICE_NAME: "${APP_NAME}"
   JAEGER_TAGS: "app=${APP_NAME}"
   JAEGER_SAMPLER_TYPE: "const"
-  JAEGER_SAMPLER_PARAM: 1
+  JAEGER_SAMPLER_PARAM: "1"
   JAEGER_SAMPLING_ENDPOINT: http://jaeger-agent.optimalbit.svc.cluster.local:5778/sampling
   JAEGER_REPORTER_LOG_SPANS: "true"
 ---
