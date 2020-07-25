@@ -23,7 +23,7 @@ metadata:
     optimal.app: ${APP_NAME}
   name: ${APP_NAME}
 spec:
-  replicas: 3 
+  replicas: 2 
   selector:
     matchLabels:
       optimal.app: ${APP_NAME}
@@ -35,13 +35,13 @@ spec:
         optimal.app: ${APP_NAME}
         team: DevOps
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchLabels:
-      #           optimal.app: ${APP_NAME}
-      #       topologyKey: "kubernetes.io/hostname"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                optimal.app: ${APP_NAME}
+            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: ${APP_NAME}
           envFrom:
@@ -97,7 +97,7 @@ data:
   LAST_COMMIT_HASH: "${LAST_COMMIT_HASH}"
   APP_ENV: prod
   JAEGER_AGENT_HOST: tracing-agent.optimalbit.svc.cluster.local
-  JAEGER_AGENT_PORT: 6831 
+  JAEGER_AGENT_PORT: "6831" 
   JAEGER_SERVICE_NAME: ${APP_NAME}
   JAEGER_TAGS: "app=${APP_NAME}"
   JAEGER_SAMPLER_TYPE: "const"
