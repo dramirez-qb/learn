@@ -10,20 +10,20 @@ environment:
   CGO_ENABLED: "0"
 
 steps:
-  - name: restore-cache-with-filesystem
-    image: meltwater/drone-cache:dev
-    pull: true
-    settings:
-      backend: "filesystem"
-      restore: true
-      cache_key: "volume"
-      archive_format: "gzip"
-      # filesystem_cache_root: "/tmp/cache"
-      mount:
-        - 'vendor'
-    volumes:
-    - name: cache
-      path: /tmp/cache
+- name: restore-cache-with-filesystem
+  image: meltwater/drone-cache:dev
+  pull: true
+  settings:
+    backend: "filesystem"
+    restore: true
+    cache_key: "volume"
+    archive_format: "gzip"
+    # filesystem_cache_root: "/tmp/cache"
+    mount:
+      - 'vendor'
+  volumes:
+  - name: cache
+    path: /tmp/cache
 
 - name: dependencies
   image: golang:1.14-alpine
@@ -67,20 +67,20 @@ steps:
     - envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
     - /bin/kubectl apply -f k8s/deployment_new.yaml -n drone
 
-  - name: rebuild-cache-with-filesystem
-    image: meltwater/drone-cache:dev
-    pull: true
-    settings:
-      backend: "filesystem"
-      rebuild: true
-      cache_key: "volume"
-      archive_format: "gzip"
-      # filesystem_cache_root: "/tmp/cache"
-      mount:
-        - 'vendor'
-    volumes:
-    - name: cache
-      path: /tmp/cache
+- name: rebuild-cache-with-filesystem
+  image: meltwater/drone-cache:dev
+  pull: true
+  settings:
+    backend: "filesystem"
+    rebuild: true
+    cache_key: "volume"
+    archive_format: "gzip"
+    # filesystem_cache_root: "/tmp/cache"
+    mount:
+      - 'vendor'
+  volumes:
+  - name: cache
+    path: /tmp/cache
 
 volumes:
   - name: cache
