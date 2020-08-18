@@ -49,7 +49,8 @@ steps:
   image: "plugins/docker"
   settings:
     repo: "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}"
-    tags: ["latest"]
+    auto_tag: true
+    daemon_off: true
     username:
       from_secret: docker_username
     password:
