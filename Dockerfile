@@ -4,7 +4,7 @@ ADD . /build/
 WORKDIR /build
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
 
-FROM scratch as production
+FROM scratch as prod
 COPY --from=builder /build/main /app/
 EXPOSE 8080
 ENTRYPOINT [ "/app/main" ]
