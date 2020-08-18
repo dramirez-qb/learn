@@ -50,7 +50,7 @@ steps:
   settings:
     repo: "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}"
     auto_tag: true
-    daemon_off: true
+#    daemon_off: true
     username:
       from_secret: docker_username
     password:
