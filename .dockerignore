@@ -15,4 +15,4 @@ docker-compose.yml
 
 # kubernetes files
 k8s/
-.*.yaml
+.*.yml
