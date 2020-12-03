@@ -1,0 +1,32 @@
+name: KinD Deployment
+on:
+  push:
+    branches: [master]
+jobs:
+  deploy-n-k8s:
+    name: "Deploy to KinD"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Create cluster using KinD"
+        id: kind
+        uses: engineerd/setup-kind@v0.5.0
+        with:
+          version: v0.9.0
+          config: .gitlab/kind-config.yaml
+      - name: "Deploy to KinD"
+        id: local-path
+        run: |
+          LAST_COMMIT_HASH: "$${GITHUB_SHA::7}"
+          APP_NAME: learn
+          envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
+          export KUBECONFIG="$(kind get kubeconfig-path)"
+          echo "waiting for nodes to be ready ..."
+          kubectl wait --for=condition=Ready nodes --all --timeout=5m
+          echo "nodes ..."
+          kubectl get nodes
+          echo "cluster-info ..."
+          kubectl cluster-info
+          kubectl apply -f k8s/deployment_new.yaml
+          echo "waiting for pods to be ready ..."
+          kubectl wait --for=condition=Ready pods --all --timeout=5m
+          kubectl get pods
