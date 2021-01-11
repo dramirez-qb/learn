@@ -49,7 +49,7 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "go-%s" $(git describe --tags --always --dirty) > .tags
+      - printf "node-%s" $(git describe --tags --always --dirty) > .tags
 
   - name: build Node image
     image: docker:latest
@@ -85,9 +85,9 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "go-%s" $(git describe --tags --always --dirty) > .tags
+      - printf "python-%s" $(git describe --tags --always --dirty) > .tags
 
-  - name: build Node image
+  - name: build Python image
     image: docker:latest
     volumes:
       - name: docker_sock
@@ -121,9 +121,9 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "go-%s" $(git describe --tags --always --dirty) > .tags
+      - printf "java-%s" $(git describe --tags --always --dirty) > .tags
 
-  - name: build Node image
+  - name: build Java image
     image: docker:latest
     volumes:
       - name: docker_sock
