@@ -19,12 +19,7 @@ steps:
   - name: dependencies
     image: golang:1.15-alpine
     commands:
-      - |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+      - go mod vendor
 
   - name: test
     image: golang:1.15-alpine
