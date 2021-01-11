@@ -1,0 +1,6 @@
+version: 1.0.0
+appVersion: 0.0.1
+name: learn
+description: Helm chart for learn
+source:
+  - https://github.com/dxas90/learn

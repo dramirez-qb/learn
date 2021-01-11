@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learn
+spec:
+  replicas: 1
+  strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: learn
+        env: {{ .Values.labels.env }}
+        cluster: {{ .Values.labels.cluster }}
+    spec:
+      containers:
+      - name: learn
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1

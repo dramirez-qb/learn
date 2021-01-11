@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: learn
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: learn
+    port: {{ .Values.service.port }}
+    protocol: TCP
+    targetPort: {{ .Values.service.targetPort }}
+  selector:
+    app: learn

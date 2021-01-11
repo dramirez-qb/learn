@@ -1,0 +1,11 @@
+{
+  "name": "learn",
+  "version": "1.0.0",
+  "description": "A test for learn",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Daniel Ramirez",
+  "license": "ISC"
+}

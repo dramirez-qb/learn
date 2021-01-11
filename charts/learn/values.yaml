@@ -1,0 +1,13 @@
+image:
+  tag: latest
+  repository: dxas90/learn
+  imagePullPolicy: IfNotPresent
+
+labels:
+  env: "staging"
+  cluster: "eks-cluster-blog"
+
+service:
+  port: 80
+  targetPort: 8080
+  type: LoadBalancer
