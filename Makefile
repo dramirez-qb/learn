@@ -23,7 +23,7 @@ else
 	endif
 endif
 
-# .PHONY: builda
+.PHONY: version
 
 container-%:
 	@docker build -t $(DOCKER_REPO)/$(APP_NAME):$(firstword $(subst _, ,$*))-${VERSION} -f docker/$(firstword $(subst _, ,$*)).dockerfile .
