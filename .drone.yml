@@ -16,21 +16,6 @@ steps:
       - git fetch --tags
       - printf "go-%s" $(git describe --tags --always --dirty) > .tags
 
-  - name: dependencies
-    image: golang:1.15-alpine
-    commands:
-      - go mod vendor
-
-  - name: test
-    image: golang:1.15-alpine
-    commands:
-      - "go test -v ."
-
-  - name: build
-    image: golang:1.15-alpine
-    commands:
-      - go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
-
   - name: build Go image
     image: docker:latest
     volumes:
@@ -109,6 +94,42 @@ steps:
         path: /var/run/docker.sock
     commands:
       - docker build --no-cache -t "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/python.dockerfile .
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+trigger:
+  branch:
+    - master
+    - feature/*
+  event:
+    - push
+
+---
+kind: pipeline
+type: docker
+name: java
+
+environment:
+  LAST_COMMIT_HASH: "$${DRONE_COMMIT_SHA::7}"
+
+clone:
+  depth: 50
+
+steps:
+  - name: fetch
+    image: alpine/git
+    commands:
+      - git fetch --tags
+      - printf "go-%s" $(git describe --tags --always --dirty) > .tags
+
+  - name: build Node image
+    image: docker:latest
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    commands:
+      - docker build --no-cache -t "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/java.dockerfile .
 volumes:
   - name: docker_sock
     host:
