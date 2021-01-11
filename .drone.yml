@@ -43,7 +43,10 @@ steps:
         path: /var/run/docker.sock
     commands:
       - docker build --no-cache -t "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/go.dockerfile .
-
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
 trigger:
   branch:
     - master
@@ -75,7 +78,10 @@ steps:
         path: /var/run/docker.sock
     commands:
       - docker build --no-cache -t "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/node.dockerfile .
-
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
 trigger:
   branch:
     - master
@@ -108,7 +114,10 @@ steps:
         path: /var/run/docker.sock
     commands:
       - docker build --no-cache -t "${DRONE_REPO_NAMESPACE}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/python.dockerfile .
-
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
 trigger:
   branch:
     - master
