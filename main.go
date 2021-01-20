@@ -37,7 +37,6 @@ func recoverHandler(next http.HandlerFunc) http.HandlerFunc {
 				http.Error(response, http.StatusText(500), 500)
 			}
 		}()
-
 		next.ServeHTTP(response, request)
 	}
 }
@@ -61,14 +60,14 @@ func helloHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-	port := flag.String("port", "8080", "port to use")
+	port := *flag.String("port", "8080", "port to use")
 	flag.Parse()
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
 
-	log.Printf("starting listening on %s\n", *port)
-	if err := http.ListenAndServe(":"+*port, nil); err != nil {
+	log.Printf("starting listening on %s\n", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
