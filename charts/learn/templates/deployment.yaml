@@ -34,6 +34,3 @@ spec:
           failureThreshold: 2
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-    terminationGracePeriodSeconds: 30
-    dnsPolicy: ClusterFirst
-    securityContext: {}
