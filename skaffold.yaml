@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+build:
+  local:
+    push: false
+  artifacts:
+    - image: dxas90/learn
+      docker:
+        dockerfile: docker/go.dockerfile
+deploy:
+  helm:
+    releases:
+      - name: my-release
+        artifactOverrides:
+          image: dxas90/learn
+        chartPath: "./charts/learn"
+        valuesFiles:
+          - "./charts/learn/values.yaml"
+        wait: true

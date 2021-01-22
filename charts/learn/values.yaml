@@ -1,7 +1,9 @@
 image:
   tag: latest
   repository: dxas90/learn
-  imagePullPolicy: IfNotPresent
+
+imageConfig:
+  pullPolicy: IfNotPresent
 
 labels:
   env: "staging"

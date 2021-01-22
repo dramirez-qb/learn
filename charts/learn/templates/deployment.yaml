@@ -17,9 +17,9 @@ spec:
         cluster: {{ .Values.labels.cluster }}
     spec:
       containers:
-      - name: learn
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+      - name: {{ .Chart.Name }}-learn
+        image: {{ .Values.image }}
+        imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
         readinessProbe:
           httpGet:
             path: /healthz
