@@ -20,6 +20,12 @@ spec:
       - name: {{ .Chart.Name }}-learn
         image: {{ .Values.image }}
         imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
+        ports:
+          - name: {{ .Chart.Name }}-web
+            containerPort: {{ .Values.service.targetPort }}
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.resources | nindent 8 }}
         readinessProbe:
           tcpSocket:
             port: 8080

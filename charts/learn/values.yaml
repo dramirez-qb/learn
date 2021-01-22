@@ -11,6 +11,14 @@ labels:
   env: "staging"
   cluster: "eks-cluster-blog"
 
+resources:
+  limits:
+    cpu: 1m
+    memory: 56Mi
+  requests:
+    cpu: 1m
+    memory: 56Mi
+
 service:
   port: 80
   targetPort: 8080
