@@ -16,4 +16,3 @@ deploy:
         chartPath: "./charts/learn"
         valuesFiles:
           - "./charts/learn/values.yaml"
-        wait: true
