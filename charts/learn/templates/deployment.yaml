@@ -4,6 +4,11 @@ metadata:
   name: {{ .Release.Name }}-learn
 spec:
   replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+        app: learn
+        env: {{ .Values.labels.env }}
+        cluster: {{ .Values.labels.cluster }}
   template:
     metadata:
       labels:
@@ -16,9 +21,19 @@ spec:
         image: {{ .Values.image }}
         imagePullPolicy: {{ .Values.imageConfig.pullPolicy }}
         readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
           httpGet:
             path: /healthz
             port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            successThreshold: 1
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 2
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+    terminationGracePeriodSeconds: 30
+    dnsPolicy: ClusterFirst
+    securityContext: {}
