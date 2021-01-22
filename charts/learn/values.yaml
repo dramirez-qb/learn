@@ -5,6 +5,8 @@ image:
 imageConfig:
   pullPolicy: IfNotPresent
 
+replicas: 1
+
 labels:
   env: "staging"
   cluster: "eks-cluster-blog"
