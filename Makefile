@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 APP_NAME = learn
 DOCKER_REPO = dxas90
-BIN_PLATFORMS := go java node python
+BIN_PLATFORMS := go
 
 # This version-strategy uses git tags to set the version string
 git_branch	   := $(shell git rev-parse --abbrev-ref HEAD)

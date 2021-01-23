@@ -13,9 +13,3 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build the Go Docker image
         run: docker build . --file docker/go.dockerfile --tag learn:go
-      - name: Build the Java Docker image
-        run: docker build . --file docker/java.dockerfile --tag learn:java
-      - name: Build the Node Docker image
-        run: docker build . --file docker/node.dockerfile --tag learn:node
-      - name: Build the Python Docker image
-        run: docker build . --file docker/python.dockerfile --tag learn:python
