@@ -10,7 +10,9 @@ build:
 deploy:
   helm:
     releases:
-      - name: my-release
+      - name: my-go-release
+        namespace: learn-go
+        createNamespace: true
         artifactOverrides:
           image: dxas90/learn
         chartPath: "./charts/learn"
