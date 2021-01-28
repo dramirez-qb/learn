@@ -1,6 +1,4 @@
-image:
-  tag: latest
-  repository: dxas90/learn
+image: dxas90/learn:latest
 
 imageConfig:
   pullPolicy: IfNotPresent
