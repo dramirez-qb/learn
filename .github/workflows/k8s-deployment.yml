@@ -2,6 +2,8 @@ name: KinD Deployment
 on:
   push:
     branches: [master]
+env:
+  APP_IMAGE: dxas90/learn
 jobs:
   deploy-n-k8s:
     name: "Deploy to KinD"
@@ -20,8 +22,6 @@ jobs:
           export LAST_COMMIT_HASH="$${GITHUB_SHA::7}"
           export APP_NAME=learn
           envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
-          kind get kubeconfig > .kube_config
-          export KUBECONFIG="$(.kube_config)"
           echo "waiting for nodes to be ready ..."
           kubectl wait --for=condition=Ready nodes --all --timeout=5m
           echo "nodes ..."
