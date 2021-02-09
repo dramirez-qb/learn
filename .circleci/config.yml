@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  kaniko-publish: glenjamin/kaniko-publish@0.0.4
+  kaniko-publish: dxas90/kaniko-publish@dev:0.0.1
 jobs:
   check_and_build_only:
     docker:
@@ -14,7 +14,7 @@ jobs:
           registry: harbor.dxas90.xyz
           dockerfile: go.dockerfile
           path: docker
-          image: library/learn
+          image: library/${CIRCLE_PROJECT_REPONAME}
           deploy: false
 workflows:
   build_without_publishing:
@@ -26,7 +26,6 @@ workflows:
           registry: harbor.dxas90.xyz
           dockerfile: go.dockerfile
           path: docker
-          image: library/learn
-          tag: ${CIRCLE_BRANCH}-${CIRCLE_SHA1}
+          image: library/${CIRCLE_PROJECT_REPONAME}
           requires:
             - check_and_build_only
