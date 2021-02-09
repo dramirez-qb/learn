@@ -16,8 +16,8 @@ jobs:
       - name: "Deploy to KinD"
         id: local-path
         run: |
-          export LAST_COMMIT_HASH: "$${GITHUB_SHA::7}"
-          export APP_NAME: learn
+          export LAST_COMMIT_HASH="$${GITHUB_SHA::7}"
+          export APP_NAME=learn
           envsubst < k8s/deployment.yaml > k8s/deployment_new.yaml
           export KUBECONFIG="$(kind get kubeconfig-path)"
           echo "waiting for nodes to be ready ..."
