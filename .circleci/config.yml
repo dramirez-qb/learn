@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  kaniko-publish: glenjamin/kaniko-publish@0.0.1
+  kaniko-publish: glenjamin/kaniko-publish@0.0.4
 jobs:
   check_and_build_only:
     docker:
