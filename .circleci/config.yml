@@ -1,6 +1,8 @@
 version: 2.1
+
 orbs:
   kaniko-publish: dxas90/kaniko-publish@dev:0.0.1
+
 workflows:
   build_and_publish:
     jobs:
