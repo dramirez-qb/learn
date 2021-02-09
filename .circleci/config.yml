@@ -7,6 +7,5 @@ workflows:
       - kaniko-publish/publish:
           context: learn
           registry: harbor.dxas90.xyz
-          dockerfile: go.dockerfile
-          path: docker
+          dockerfile: docker/go.dockerfile
           image: library/${CIRCLE_PROJECT_REPONAME}
