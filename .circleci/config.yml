@@ -1,0 +1,24 @@
+version: 2.1
+orbs:
+  kaniko-publish: glenjamin/kaniko-publish@0.0.1
+jobs:
+  check_and_build_only:
+    docker:
+      - image: "glenathan/circleci-kaniko:build-62"
+    working_directory: /workspace
+    steps:
+      - checkout
+      - kaniko-publish/check
+      - kaniko-publish/build_and_push:
+          deploy: false
+workflows:
+  build_without_publishing:
+    jobs:
+      - check_and_build_only:
+          context: learn
+      - kaniko-publish/publish:
+          context: learn
+          registry: harbor.dxas90.xyz
+          dockerfile: docker/go.dockerfile
+          image: library/learn
+          tag: ${CIRCLE_BRANCH}-${CIRCLE_SHA1}

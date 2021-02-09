@@ -162,6 +162,7 @@ cython_debug/
 # ---> Java
 # Compiled class file
 *.class
+*.project
 
 # Log file
 *.log
