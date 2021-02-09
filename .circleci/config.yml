@@ -8,8 +8,13 @@ jobs:
     working_directory: /workspace
     steps:
       - checkout
-      - kaniko-publish/check
+      - kaniko-publish/check:
+          registry: harbor.dxas90.xyz
       - kaniko-publish/build_and_push:
+          registry: harbor.dxas90.xyz
+          dockerfile: go.dockerfile
+          path: docker
+          image: library/learn
           deploy: false
 workflows:
   build_without_publishing:
@@ -19,6 +24,9 @@ workflows:
       - kaniko-publish/publish:
           context: learn
           registry: harbor.dxas90.xyz
-          dockerfile: docker/go.dockerfile
+          dockerfile: go.dockerfile
+          path: docker
           image: library/learn
           tag: ${CIRCLE_BRANCH}-${CIRCLE_SHA1}
+          requires:
+            - check_and_build_only
