@@ -41,6 +41,9 @@ volumes:
   - name: dockersock
     temp: {}
 
+image_pull_secrets:
+  - dockerconfig
+
 trigger:
   branch:
     - master
