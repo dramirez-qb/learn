@@ -19,6 +19,7 @@ steps:
     commands:
       - git fetch --tags
       - printf "go-%s\n" $(git describe --tags --always --dirty) > .tags
+      - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
 
   - name: build Go image
     image: ghcr.io/finitum/drone-kaniko:0.7.0
