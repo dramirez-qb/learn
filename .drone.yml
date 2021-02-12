@@ -21,28 +21,15 @@ steps:
       - printf "go-%s" $(git describe --tags --always --dirty) > .tags
 
   - name: build Go image
-    image: docker:latest
-    environment:
-      REPO_NAME:
-        from_secret: registryname
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
-    commands:
-      - sleep 10 # give docker enough time to start
-      - docker build --no-cache -t "${REPO_NAME}/${DRONE_REPO_NAME}:$(cat .tags)" -f docker/go.dockerfile .
-
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    volumes:
-      - name: dockersock
-        path: /var/run
-
-volumes:
-  - name: dockersock
-    temp: {}
+    image: banzaicloud/drone-kaniko
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: library/learn
+      dockerfile: docker/go.dockerfile
+      registry: harbor.dxas90.xyz
 
 image_pull_secrets:
   - dockerconfig
