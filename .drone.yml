@@ -18,7 +18,7 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "go-%s" $(git describe --tags --always --dirty) > .tags
+      - printf "go-%s\n" $(git describe --tags --always --dirty) > .tags
 
   - name: build Go image
     image: ghcr.io/finitum/drone-kaniko:0.7.0
