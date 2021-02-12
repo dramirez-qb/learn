@@ -30,6 +30,7 @@ steps:
       repo: harbor.dxas90.xyz/library/learn
       dockerfile: docker/go.dockerfile
       registry: harbor.dxas90.xyz
+      auto_tag: true
 
 image_pull_secrets:
   - dockerconfig
