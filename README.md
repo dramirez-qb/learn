@@ -1,4 +1,4 @@
-# learn [![Build Status](http://192.168.100.6:5000/api/badges/dxas90/learn/status.svg)](http://192.168.100.6:5000/dxas90/learn)
+# learn [![Build Status](https://drone.dxas90.xyz/api/badges/dxas90/learn/status.svg)](https://drone.dxas90.xyz/dxas90/learn)
 this is to learn openshift :)
 
 ```sh
