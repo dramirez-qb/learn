@@ -27,7 +27,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo: library/learn
+      repo: harbor.dxas90.xyz/library/learn
       dockerfile: docker/go.dockerfile
       registry: harbor.dxas90.xyz
 
