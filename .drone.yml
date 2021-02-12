@@ -22,6 +22,9 @@ steps:
 
   - name: build Go image
     image: docker:latest
+    environment:
+      REPO_NAME:
+        from_secret: registryname
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
