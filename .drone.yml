@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: learn-app
+name: learn-app-development
 
 metadata:
   namespace: default
@@ -54,7 +54,7 @@ trigger:
 ---
 kind: pipeline
 type: kubernetes
-name: learn-app
+name: learn-app-prod
 
 metadata:
   namespace: default
