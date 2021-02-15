@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: argocdapps-project
+  namespace: argocd
+  labels:
+    app: argocdapps
+spec:
+  # Project description
+  description: Our ArgoCD Project to deploy our app locally
+  # Allow manifests to deploy only from dxas90 git repositories
+  sourceRepos:
+    - "https://github.com/dxas90/*"
+  destinations:
+    - namespace: "*"
+      server: "*"
+  # Enables namespace orphaned resource monitoring.
+  orphanedResources:
+    warn: false

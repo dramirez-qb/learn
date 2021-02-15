@@ -1,0 +1,54 @@
+kind: Application
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: learn-develop
+  namespace: argocd
+spec:
+  destination:
+    namespace: learn-staging
+    server: 'https://kubernetes.default.svc'
+  project: argocdapps-project
+  source:
+    helm:
+      parameters:
+        - name: image
+          value: 'dxas90/learn:develop'
+      valueFiles:
+        - values.yaml
+    path: charts/learn
+    repoURL: 'https://github.com/dxas90/learn.git'
+    targetRevision: develop
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+kind: Application
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: learn-prod
+  namespace: argocd
+spec:
+  destination:
+    namespace: learn-prod
+    server: 'https://kubernetes.default.svc'
+  project: argocdapps-project
+  source:
+    helm:
+      parameters:
+        - name: image
+          value: 'dxas90/learn:latest'
+      valueFiles:
+        - values.yaml
+    path: charts/learn
+    repoURL: 'https://github.com/dxas90/learn.git'
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
