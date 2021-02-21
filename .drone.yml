@@ -14,7 +14,7 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "%s\n" ${DRONE_COMMIT_BRANCH} > .tags
+      - printf "%s\n" ${DRONE_COMMIT_BRANCH/#feature\//} > .tags
       - printf "%s\n" $(git describe --tags --always --dirty) >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
 
@@ -24,7 +24,7 @@ steps:
       - sh -c "ct lint --config test/chart-testing.yaml"
 
   - name: build Go image
-    image: ghcr.io/finitum/drone-kaniko:0.7.0
+    image: drone/drone-kaniko
     settings:
       skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
@@ -47,15 +47,14 @@ trigger:
     - feature/*
   event:
     - push
+# services:
+#   - name: docker
+#     image: docker:dind
+#     privileged: true
+#     volumes:
+#       - name: dockersock
+#         path: /var/run
 
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    volumes:
-      - name: dockersock
-        path: /var/run
-
-volumes:
-  - name: dockersock
-    temp: {}
+# volumes:
+#   - name: dockersock
+#     temp: {}
