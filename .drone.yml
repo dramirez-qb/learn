@@ -28,7 +28,7 @@ steps:
       - fetch
 
   - name: Go image (build)
-    image: plugins/kaniko
+    image: ghcr.io/finitum/drone-kaniko:0.7.0
     settings:
       skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
