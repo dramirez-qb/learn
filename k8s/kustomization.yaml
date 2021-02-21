@@ -1,0 +1,16 @@
+kind: Kustomization
+
+resources:
+  - ./base
+
+namePrefix: gitops-
+commonLabels:
+  owner: gitops
+  app: gitops-k8s
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+    team: DevOps
+  annotations:
+    note: generated

@@ -3,9 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
+
+type Welcome struct {
+	Name string
+	Time string
+	User  string
+}
 
 func withTracing(next http.HandlerFunc) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
@@ -56,7 +65,11 @@ func pongHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func helloHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, "Hello, %s!", request.URL.Path[1:])
+	welcome := Welcome{request.URL.Path[1:], time.Now().Format(time.Stamp), os.Getenv("USER")}
+	templates := template.Must(template.ParseFiles("templates/index.html"))
+	if err := templates.ExecuteTemplate(response, "index.html", welcome); err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func main() {
@@ -65,7 +78,9 @@ func main() {
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
-
+	http.Handle("/static/",
+		http.StripPrefix("/static/",
+			http.FileServer(http.Dir("static"))))
 	log.Printf("starting listening on %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)

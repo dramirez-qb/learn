@@ -1,14 +1,10 @@
 ---
 kind: pipeline
-type: kubernetes
+type: docker
 name: learn-app-development
 
-metadata:
+environment:
   namespace: default
-  annotations:
-    drone-ci: "true"
-  labels:
-    drone-ci: "true"
 
 clone:
   depth: 50
@@ -22,6 +18,11 @@ steps:
       - printf "%s\n" $(git describe --tags --always --dirty) >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
 
+  - name: Run chart-testing (lint)
+    image: dxas90/drone-helper
+    commands:
+      - sh -c "ct lint --config test/chart-testing.yaml"
+
   - name: build Go image
     image: ghcr.io/finitum/drone-kaniko:0.7.0
     settings:
@@ -36,11 +37,6 @@ steps:
       repo: library/learn
       dockerfile: docker/go.dockerfile
       registry: harbor.dxas90.xyz
-
-  - name: Run chart-testing (lint)
-    image: quay.io/helmpack/chart-testing:v3.3.1
-    commands:
-      - sh -c "ct lint --config test/chart-testing.yaml"
 
 image_pull_secrets:
   - dockerconfig
@@ -51,55 +47,15 @@ trigger:
     - feature/*
   event:
     - push
----
-kind: pipeline
-type: kubernetes
-name: learn-app-prod
 
-metadata:
-  namespace: default
-  annotations:
-    drone-ci: "true"
-  labels:
-    drone-ci: "true"
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
 
-clone:
-  depth: 50
-
-steps:
-  - name: fetch
-    image: alpine/git
-    commands:
-      - git fetch --tags
-      - printf "%s\n" latest > .tags
-      - printf "%s\n" $(git describe --tags --always --dirty) >> .tags
-      - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
-
-  - name: build Go image
-    image: ghcr.io/finitum/drone-kaniko:0.7.0
-    settings:
-      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
-      build_args:
-        - COMMIT_SHA=${DRONE_COMMIT_SHA}
-        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: library/learn
-      dockerfile: docker/go.dockerfile
-      registry: harbor.dxas90.xyz
-
-  - name: Run chart-testing (lint)
-    image: quay.io/helmpack/chart-testing:v3.3.1
-    commands:
-      - sh -c "ct lint --config test/chart-testing.yaml"
-
-image_pull_secrets:
-  - dockerconfig
-
-trigger:
-  branch:
-    - master
-  event:
-    - push
+volumes:
+  - name: dockersock
+    temp: {}

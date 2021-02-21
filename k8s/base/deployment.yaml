@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitops-k8s
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: gitops-k8s
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: gitops-k8s
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: learn
+          envFrom:
+            - configMapRef:
+                name: learn-config
+          image: dxas90/learn:latest
+          ports:
+            - name: web
+              containerPort: 8080 # line 12
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 10m
+              memory: 56Mi
+            requests:
+              cpu: 10m
+              memory: 56Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            failureThreshold: 2
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      # https://kubernetes.io/docs/concepts/containers/images/#referring-to-an-imagepullsecrets-on-a-pod
+      # imagePullSecrets:
+      #   - name: pull-registry
+      restartPolicy: Always
+status: {}
