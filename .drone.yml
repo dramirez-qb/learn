@@ -24,7 +24,7 @@ steps:
       - sh -c "ct lint --config test/chart-testing.yaml"
 
   - name: build Go image
-    image: drone/drone-kaniko
+    image: plugins/kaniko
     settings:
       skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
