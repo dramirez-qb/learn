@@ -1,3 +1,4 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
@@ -5,12 +6,12 @@ resources:
 
 namePrefix: gitops-
 commonLabels:
-  owner: gitops
   app: gitops-k8s
+  owner: gitops
 generatorOptions:
-  disableNameSuffixHash: true
-  labels:
-    type: generated
-    team: DevOps
   annotations:
     note: generated
+  disableNameSuffixHash: true
+  labels:
+    team: DevOps
+    type: generated

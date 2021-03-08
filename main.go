@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
 	"html/template"
@@ -13,7 +14,7 @@ import (
 type Welcome struct {
 	Name string
 	Time string
-	User  string
+	User string
 }
 
 func withTracing(next http.HandlerFunc) http.HandlerFunc {
@@ -72,15 +73,17 @@ func helloHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// content is our static web server content.
+//go:embed static/* templates
+var content embed.FS
+
 func main() {
 	port := *flag.String("port", "8080", "port to use")
 	flag.Parse()
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
-	http.Handle("/static/",
-		http.StripPrefix("/static/",
-			http.FileServer(http.Dir("static"))))
+	http.Handle("/static/", http.FileServer(http.FS(content)))
 	log.Printf("starting listening on %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)

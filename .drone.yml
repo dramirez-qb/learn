@@ -47,7 +47,7 @@ steps:
   - name: Run Kustomize
     image: dxas90/drone-helper
     commands:
-      - sh -c "kustomize edit set image harbor.dxas90.xyz/dxas90/learn:$(git log -n 1 --pretty=format:"%H")"
+      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git log -n 1 --pretty=format:"%H")"
     depends_on:
       - Go image (build)
 
