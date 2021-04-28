@@ -26,7 +26,6 @@ jobs:
         with:
           context: .
           file: docker/go.dockerfile
-          platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/dxas90/learn:${{ steps.get_version.outputs.VERSION }}
   goreleaser:
