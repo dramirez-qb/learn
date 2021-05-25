@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Welcome struct {
@@ -84,6 +86,7 @@ func main() {
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
 	http.Handle("/static/", http.FileServer(http.FS(content)))
+	http.Handle("/metrics", promhttp.Handler())
 	log.Printf("starting listening on %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)

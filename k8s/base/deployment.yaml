@@ -8,21 +8,59 @@ spec:
   selector:
     matchLabels:
       app: gitops-k8s
-  strategy: {}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 3
   template:
     metadata:
       labels:
         app: gitops-k8s
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app: gitops-k8s
-              topologyKey: "kubernetes.io/hostname"
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchLabels:
+      #             app: gitops-k8s
+      #         topologyKey: "kubernetes.io/hostname"
+      initContainers:
+        - name: pull-secrets
+          image: "busybox"
+          imagePullPolicy: IfNotPresent
+          command:
+            - "busybox"
+          args:
+            - "wget"
+            - "-O"
+            - "/secrets/ultrasecret.json"
+            - "https://httpbin.org/get?key=secret"
+          env:
+            - name: MY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: learn-config
+          resources:
+            limits:
+              cpu: 5m
+              memory: 16Mi
+            requests:
+              cpu: 5m
+              memory: 16Mi
+          volumeMounts:
+            - mountPath: /secrets
+              name: secrets
       containers:
         - name: learn
+          env:
+            - name: MY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
                 name: learn-config
@@ -33,11 +71,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 10m
-              memory: 56Mi
+              cpu: 5m
+              memory: 48Mi
             requests:
-              cpu: 10m
-              memory: 56Mi
+              cpu: 5m
+              memory: 48Mi
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -50,13 +88,30 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 3
             failureThreshold: 2
+          # lifecycle:
+          #   preStop:
+          #     exec:
+          #       command: ["sleep", "15"]
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /secrets
+              name: secrets
+            - mountPath: /cache
+              name: cache-volume
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
-      securityContext: {}
+      securityContext:
+        fsGroup: 65534
+      serviceAccountName: k8s-learn
       # https://kubernetes.io/docs/concepts/containers/images/#referring-to-an-imagepullsecrets-on-a-pod
       # imagePullSecrets:
       #   - name: pull-registry
       restartPolicy: Always
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: "learn"
+        - name: cache-volume
+          emptyDir: {}
 status: {}

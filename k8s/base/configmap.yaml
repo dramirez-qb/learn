@@ -5,17 +5,6 @@ metadata:
   name: learn-config
 data:
   REDIS_DSN: redis://redis:6379?timeout=0.5
-  REDIS_CLUSTER: redis
-  REDIS_RETRY: "2"
-  REDIS_TIMEOUT_CONNECTION: "1"
   MONGODB_URL: mongodb://mongodb:27017
   MAILER_URL: smtp://mail-server:1025
   LAST_COMMIT_HASH: "${LAST_COMMIT_HASH}"
-  JAEGER_AGENT_HOST: tracing-agent.monitoring.svc.cluster.local
-  JAEGER_AGENT_PORT: "6831"
-  JAEGER_SERVICE_NAME: "learn"
-  JAEGER_TAGS: "app=learn"
-  JAEGER_SAMPLER_TYPE: "const"
-  JAEGER_SAMPLER_PARAM: "1"
-  JAEGER_SAMPLING_ENDPOINT: http://jaeger-agent.monitoring.svc.cluster.local:5778/sampling
-  JAEGER_REPORTER_LOG_SPANS: "true"
