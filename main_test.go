@@ -15,7 +15,7 @@ func TestHelloRoute(t *testing.T) {
 	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
-	assert.Contains(t, w.Body.String(), "Hello")
+	assert.Contains(t, w.Body.String(), "Welcome")
 }
 
 func TestPingRoute(t *testing.T) {

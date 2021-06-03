@@ -1,14 +1,10 @@
 ---
 kind: pipeline
-type: kubernetes
-name: golang
+type: docker
+name: learn-app-development
 
-metadata:
+environment:
   namespace: default
-  annotations:
-    drone-ci: "true"
-  labels:
-    drone-ci: "true"
 
 clone:
   depth: 50
@@ -18,10 +14,20 @@ steps:
     image: alpine/git
     commands:
       - git fetch --tags
-      - printf "go-%s\n" $(git describe --tags --always --dirty) > .tags
+      - rm -f .tags
+      - printf "%s\n" ${DRONE_COMMIT_BRANCH/feature\//} > .tags
+      - printf "%s\n" $(git log -n 1 --pretty=format:"%H") >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
+      - printf "LABEL branch %s\n" ${DRONE_COMMIT_BRANCH} >> docker/go.dockerfile
 
-  - name: build Go image
+  - name: Run chart-testing (lint)
+    image: dxas90/drone-helper
+    commands:
+      - sh -c "ct lint --config test/chart-testing.yaml"
+    depends_on:
+      - fetch
+
+  - name: Go image (build)
     image: ghcr.io/finitum/drone-kaniko:0.7.0
     settings:
       skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
@@ -32,16 +38,36 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo: library/learn
+      repo: dxas90/learn
       dockerfile: docker/go.dockerfile
       registry: harbor.dxas90.xyz
+    depends_on:
+      - Run chart-testing (lint)
+
+  - name: Run Kustomize
+    image: dxas90/drone-helper
+    commands:
+      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git log -n 1 --pretty=format:"%H")"
+    depends_on:
+      - Go image (build)
 
 image_pull_secrets:
   - dockerconfig
 
 trigger:
   branch:
-    - master
+    - develop
     - feature/*
   event:
     - push
+# services:
+#   - name: docker
+#     image: docker:dind
+#     privileged: true
+#     volumes:
+#       - name: dockersock
+#         path: /var/run
+
+# volumes:
+#   - name: dockersock
+#     temp: {}

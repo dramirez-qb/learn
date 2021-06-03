@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: learn
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: dummy.dxas90.xyz
+    http:
+      paths:
+      - backend:
+          service:
+            name: gitops-learn
+            port:
+              name: web
+        path: /
+        pathType: ImplementationSpecific

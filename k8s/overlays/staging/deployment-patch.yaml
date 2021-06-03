@@ -1,0 +1,13 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learn
+spec:
+  template:
+    spec:
+      containers:
+        - name: learn
+          env:
+            - name: ENVIRONMENT
+              value: staging

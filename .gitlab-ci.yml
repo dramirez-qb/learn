@@ -1,32 +1,31 @@
-# https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4566#note_199261985
-image: dxas90/ci-tools:v0.0.1
-variables:
-  KUBECTL: v1.18.2
-  KIND: v0.8.1
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-# services:
-# - name: docker:dind
-# alias: docker
-# entrypoint: ["env", "-u", "DOCKER_HOST"]
-# command: ["dockerd-entrypoint.sh"]
+# https://docs.gitlab.com/ee/ci/yaml/includes.html
+include:
+  - project: dxas90/learn
+    file: .gitlab-ci-template.yml
+
 stages:
   - test
-  - cleanup
-test:
+  - build
+  - containerize
+
+test-code:
   stage: test
-  before_script:
-    - kind create cluster --config=./.gitlab/kind-config.yaml
-    - sed -i -E -e 's/localhost|0\.0\.0\.0/docker/g' "$HOME/.kube/config"
-  script:
-    - kubectl get nodes -o wide
-    - kubectl get pods --all-namespaces -o wide
-    - kubectl get services --all-namespaces -o wide
-  after_script:
-    - kind delete cluster
-cleanup:
-  stage: cleanup
-  script:
-    - kind delete cluster
-  when: always
+  extends: .go-test
+
+build-branch:
+  stage: build
+  extends: .go-build
+  except:
+    - master
+
+build:
+  stage: build
+  extends: .go-build
+  only:
+    - master
+
+containerize:
+  stage: containerize
+  extends: .dockerize
+  only:
+    - master

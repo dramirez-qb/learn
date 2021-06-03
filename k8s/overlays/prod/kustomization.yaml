@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patchesStrategicMerge:
+  - ./deployment-patch.yaml
+  - ./service-patch.yaml
+  - ./ingress-patch.yaml
+
+patches:
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom/-
+        value:
+          configRef:
+            name: learn-config
+    target:
+      kind: Deployment
+
+resources:
+  - ../../base/
+
+images:
+  - name: dxas90/learn
+    newTag: latest
+
+namePrefix: prod-
+commonLabels:
+  owner: gitops
+  app: gitops-k8s
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    type: generated
+    team: DevOps
+  annotations:
+    note: generated

@@ -1,0 +1,23 @@
+.go-build:
+  image: golang:alpine
+  script:
+    - go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME/$CI_COMMIT_SHORT_SHA"
+    paths:
+      - main
+    expire_in: 30 days
+  variables:
+    CGO_ENABLED: 0
+
+.go-test:
+  extends: .go-build
+  script:
+    - go test -v .
+
+.dockerize:
+  image: gcr.io/kaniko-project/executor
+  entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile ./docker/go.dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA

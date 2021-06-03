@@ -1,0 +1,32 @@
+apiVersion: k3d.io/v1alpha2
+kind: Simple
+servers: 1
+agents: 2
+kubeAPI:
+  hostIP: "0.0.0.0"
+  hostPort: "6550"
+ports:
+  - port: 0.0.0.0:80:80
+    nodeFilters:
+      - agent[0]
+  - port: 0.0.0.0:443:443
+    nodeFilters:
+      - agent[0]
+  - port: 0.0.0.0:5053:53/udp
+    nodeFilters:
+      - agent[0]
+options:
+  k3d:
+    wait: true
+    timeout: "60s"
+    disableLoadbalancer: true
+    disableImageVolume: false
+  k3s:
+    extraServerArgs:
+      - --no-deploy=traefik,servicelb,metrics-server
+      - --tls-san=dev.local
+      - --tls-san=*.dev.local
+    extraAgentArgs: []
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
