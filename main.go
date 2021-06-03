@@ -1,11 +1,23 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+type Welcome struct {
+	Name string
+	Time string
+	User string
+}
 
 func withTracing(next http.HandlerFunc) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
@@ -56,16 +68,31 @@ func pongHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func helloHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(response, "Hello, %s!", request.URL.Path[1:])
+	welcome := Welcome{request.URL.Path[1:], time.Now().Format(time.Stamp), os.Getenv("USER")}
+	templates := template.Must(template.ParseFiles("templates/index.html"))
+	if err := templates.ExecuteTemplate(response, "index.html", welcome); err != nil {
+		http.Error(response, err.Error(), http.StatusInternalServerError)
+	}
 }
 
+// content is our static web server content.
+//go:embed static/* templates
+var content embed.FS
+var gitCommit string
+
 func main() {
+	version := *flag.Bool("version", false, "Version")
 	port := *flag.String("port", "8080", "port to use")
 	flag.Parse()
+	if version {
+		fmt.Printf("version: %s\n", gitCommit)
+		return
+	}
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
-
+	http.Handle("/static/", http.FileServer(http.FS(content)))
+	http.Handle("/metrics", promhttp.Handler())
 	log.Printf("starting listening on %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)

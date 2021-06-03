@@ -6,7 +6,7 @@ imageConfig:
 replicas: 1
 
 labels:
-  env: "staging"
+  env: "local"
   cluster: "eks-cluster-blog"
 
 resources:
