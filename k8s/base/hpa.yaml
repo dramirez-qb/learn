@@ -1,5 +1,5 @@
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: learn
@@ -14,8 +14,23 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: 80
+        target:
+          type: Utilization
+          averageUtilization: 80
     - type: Resource
       resource:
         name: memory
-        targetAverageValue: 50Mi
+        target:
+          type: AverageValue
+          averageValue: 50Mi
+    # - type: Object
+    #   object:
+    #     metric:
+    #       name: requests-per-second
+    #     describedObject:
+    #       apiVersion: networking.k8s.io/v1beta1
+    #       kind: Ingress
+    #       name: learn
+    #     target:
+    #       type: Value
+    #       value: 0.5k

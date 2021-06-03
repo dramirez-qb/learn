@@ -61,6 +61,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: USER
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
                 name: learn-config
@@ -71,10 +75,10 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 5m
+              cpu: 10m
               memory: 48Mi
             requests:
-              cpu: 5m
+              cpu: 10m
               memory: 48Mi
           readinessProbe:
             tcpSocket:

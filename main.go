@@ -78,10 +78,16 @@ func helloHandler(response http.ResponseWriter, request *http.Request) {
 // content is our static web server content.
 //go:embed static/* templates
 var content embed.FS
+var gitCommit string
 
 func main() {
+	version := *flag.Bool("version", false, "Version")
 	port := *flag.String("port", "8080", "port to use")
 	flag.Parse()
+	if version {
+		fmt.Printf("version: %s\n", gitCommit)
+		return
+	}
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
