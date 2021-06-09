@@ -10,3 +10,4 @@ resources:
   - ./service.yaml
   - ./serviceaccount.yaml
   - ./hpa.yaml
+  - ./secret.yaml

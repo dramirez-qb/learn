@@ -2,11 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: learn
+  annotations:
+    traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
 spec:
   ports:
     - name: "web"
       port: 80
-      targetPort: 8080 # line 53
+      targetPort: web # line 53
   selector:
     app: gitops-k8s
 status:
