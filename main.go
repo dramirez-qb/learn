@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -75,6 +76,19 @@ func helloHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func fibHandler(response http.ResponseWriter, request *http.Request) {
+	num := rand.Intn(45)
+	log.Printf("random: %+v", num)
+	fmt.Fprintf(response, "%d\n", FibonacciRecursion(num))
+}
+
+func FibonacciRecursion(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return FibonacciRecursion(n-1) + FibonacciRecursion(n-2)
+}
+
 // content is our static web server content.
 //go:embed static/* templates
 var content embed.FS
@@ -88,11 +102,13 @@ func main() {
 		fmt.Printf("version: %s\n", gitCommit)
 		return
 	}
+	rand.Seed(time.Now().UnixNano())
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
-	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
+	http.Handle("/fib", use(fibHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
-	http.Handle("/static/", http.FileServer(http.FS(content)))
 	http.Handle("/metrics", promhttp.Handler())
+	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
+	http.Handle("/static/", http.FileServer(http.FS(content)))
 	log.Printf("starting listening on %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)

@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: learn
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: gitops-k8s
@@ -22,8 +22,11 @@ spec:
       #   podAntiAffinity:
       #     requiredDuringSchedulingIgnoredDuringExecution:
       #       - labelSelector:
-      #           matchLabels:
-      #             app: gitops-k8s
+      #           matchExpressions:
+      #             - key: app
+      #               operator: In
+      #               values:
+      #                 - gitops-k8s
       #         topologyKey: "kubernetes.io/hostname"
       initContainers:
         - name: pull-secrets
@@ -80,18 +83,14 @@ spec:
             requests:
               cpu: 10m
               memory: 48Mi
+          # https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/
           readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
             httpGet:
               path: /healthz
-              port: 8080
+              port: web
             initialDelaySeconds: 3
-            periodSeconds: 3
-            failureThreshold: 2
+            timeoutSeconds: 2
+            failureThreshold: 5
           # lifecycle:
           #   preStop:
           #     exec:

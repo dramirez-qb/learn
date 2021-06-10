@@ -1,19 +1,25 @@
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: learn
   annotations:
-    kubernetes.io/ingress.class: kong
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  # tls:
+  #   - hosts:
+  #       - www.dxas90.xyz
+  #     secretName: www-dxas90-xyz-prod
   rules:
-  - host: dummy.dxas90.xyz
-    http:
-      paths:
-      - backend:
-          service:
-            name: gitops-learn
-            port:
-              name: web
-        path: /
-        pathType: ImplementationSpecific
+    - host: www.dxas90.xyz
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: gitops-learn
+              servicePort: web
