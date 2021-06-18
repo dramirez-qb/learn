@@ -109,7 +109,5 @@ trigger:
     - push
 
 volumes:
-  #   - name: dockersock
-  #     temp: {}
   - name: deps
     temp: {}
