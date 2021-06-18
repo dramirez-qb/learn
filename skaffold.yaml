@@ -6,7 +6,7 @@ build:
   artifacts:
     - image: dxas90/learn
       docker:
-        dockerfile: docker/go.dockerfile
+        dockerfile: Dockerfile
 deploy:
   helm:
     releases:

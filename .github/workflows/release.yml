@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: docker/go.dockerfile
+          file: Dockerfile
           push: true
           tags: ghcr.io/dxas90/learn:${{ steps.get_version.outputs.VERSION }}
   goreleaser:
