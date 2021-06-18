@@ -18,7 +18,7 @@ steps:
       - printf "%s\n" ${DRONE_COMMIT_BRANCH/feature\//} > .tags
       - printf "%s\n" $(git log -n 1 --pretty=format:"%H") >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
-      - printf "LABEL branch %s\n" ${DRONE_COMMIT_BRANCH} >> docker/go.dockerfile
+      - printf "LABEL branch %s\n" ${DRONE_COMMIT_BRANCH} >> .tags
 
   - name: Run chart-testing (lint)
     image: dxas90/drone-helper
@@ -39,7 +39,7 @@ steps:
       password:
         from_secret: docker_password
       repo: dxas90/learn
-      dockerfile: docker/go.dockerfile
+      dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
@@ -71,3 +71,43 @@ trigger:
 # volumes:
 #   - name: dockersock
 #     temp: {}
+---
+kind: pipeline
+type: docker
+name: learn-app-release
+
+environment:
+  namespace: default
+
+clone:
+  depth: 50
+
+steps:
+  - name: fetch
+    image: alpine/git
+    commands:
+      - git fetch --tags
+  - name: release
+    image: golang
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_token
+    volumes:
+      - name: deps
+        path: /go
+    commands:
+      - curl -sL https://git.io/goreleaser | bash
+    when:
+      event:
+        - tag
+
+image_pull_secrets:
+  - dockerconfig
+
+trigger:
+  event:
+    - push
+
+volumes:
+  - name: deps
+    temp: {}
