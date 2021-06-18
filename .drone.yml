@@ -72,11 +72,9 @@ trigger:
 #   - name: dockersock
 #     temp: {}
 ---
-
----
 kind: pipeline
 type: docker
-name: learn-app-development
+name: learn-app-release
 
 environment:
   namespace: default
