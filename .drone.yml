@@ -16,7 +16,7 @@ steps:
       - git fetch --tags
       - rm -f .tags
       - printf "%s\n" ${DRONE_COMMIT_BRANCH/feature\//} > .tags
-      - printf "%s\n" $(git log -n 1 --pretty=format:"%H") >> .tags
+      - printf "%s\n" $(git describe --abbrev=0 --tags) >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
       - printf "LABEL branch %s\n" ${DRONE_COMMIT_BRANCH} >> .tags
 
@@ -47,7 +47,7 @@ steps:
   - name: Run Kustomize
     image: dxas90/drone-helper
     commands:
-      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git log -n 1 --pretty=format:"%H")"
+      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git describe --abbrev=0 --tags)"
     depends_on:
       - Go image (build)
 
@@ -97,16 +97,15 @@ steps:
         path: /go
     commands:
       - curl -sL https://git.io/goreleaser | bash
-    when:
-      event:
-        - tag
 
 image_pull_secrets:
   - dockerconfig
 
 trigger:
+  branch:
+    - master
   event:
-    - push
+    - tag
 
 volumes:
   - name: deps
