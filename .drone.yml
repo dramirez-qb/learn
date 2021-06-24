@@ -15,7 +15,6 @@ steps:
     commands:
       - git fetch --tags
       - rm -f .tags
-      - printf "%s\n" ${DRONE_COMMIT_BRANCH/feature\//} > .tags
       - printf "%s\n" $(git describe --abbrev=0 --tags) >> .tags
       - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
       - printf "LABEL branch %s\n" ${DRONE_COMMIT_BRANCH} >> .tags
