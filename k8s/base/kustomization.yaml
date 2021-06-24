@@ -11,3 +11,4 @@ resources:
   - ./serviceaccount.yaml
   - ./hpa.yaml
   - ./secret.yaml
+  - ./networkpolicy.yaml
