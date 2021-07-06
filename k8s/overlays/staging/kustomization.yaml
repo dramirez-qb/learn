@@ -5,24 +5,13 @@ patchesStrategicMerge:
   - ./deployment-patch.yaml
   - ./ingress-patch.yaml
 
-patches:
-  - patch: |-
-      - op: add
-        path: /spec/template/spec/containers/0/envFrom/-
-        value:
-          configRef:
-            name: learn-config
-    target:
-      kind: Deployment
-
 resources:
   - ../../base/
 
 images:
   - name: dxas90/learn
-    newTag: staging
+    newTag: latest
 
-namePrefix: staging-
 commonLabels:
   owner: gitops
   app: gitops-k8s

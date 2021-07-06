@@ -136,8 +136,7 @@ steps:
       repo: dxas90/learn
       registry: harbor.dxas90.xyz
     depends_on:
-      - Run chart-testing (lint)
-      - UnitTest (test)
+      - build staging image (build)
     when:
       event:
         - tag

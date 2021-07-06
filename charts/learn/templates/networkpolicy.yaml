@@ -1,0 +1,16 @@
+# https://ahmet.im/blog/kubernetes-network-policy/
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "learn.fullname" . }}
+  labels:
+{{ include "learn.labels" $ | indent 4 }}
+spec:
+  podSelector:
+    matchLabels: {}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              purpose: infrastructure

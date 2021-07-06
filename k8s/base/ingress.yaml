@@ -12,10 +12,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - www.dxas90.xyz
-      secretName: www-dxas90-xyz-prod
+        - app.dxas90.xyz
+      secretName: app-dxas90-xyz-prod
   rules:
-    - host: www.dxas90.xyz
+    - host: app.dxas90.xyz
       http:
         paths:
           - path: /
