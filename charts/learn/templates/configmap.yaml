@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "learn.fullname" . }}-config
+  labels:
+{{ include "learn.labels" $ | indent 4 }}
+data:
+  REDIS_DSN: redis://redis:6379?timeout=0.5
+  MONGODB_URL: mongodb://mongodb:27017
+  MAILER_URL: smtp://mail-server:1025
+{{- with .Values.extraEnv }}
+  {{- toYaml . | nindent 2 }}
+{{- end }}

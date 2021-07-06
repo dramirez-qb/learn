@@ -1,0 +1,13 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "learn.fullname" . }}-pdb
+  labels:
+{{ include "learn.labels" $ | indent 4 }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+{{ include "learn.labels" $ | indent 6 }}
+{{- end }}

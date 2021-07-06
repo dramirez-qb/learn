@@ -7,8 +7,8 @@ metadata:
 spec:
   ports:
     - name: "web"
-      port: 80
-      targetPort: web # line 53
+      port: 8080
+      targetPort: web
   selector:
     app: gitops-k8s
 status:

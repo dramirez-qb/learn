@@ -1,13 +1,45 @@
-image: dxas90/learn:v0.0.11
+image: dxas90/learn:latest
 
 imageConfig:
   pullPolicy: IfNotPresent
 
 replicas: 1
 
-labels:
-  env: "local"
-  cluster: "eks-cluster-blog"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "learn"
+
+podAnnotations: {}
+
+serviceAnnotations:
+  traefik.ingress.kubernetes.io/service.sticky.cookie: "true"
+
+podSecurityContext:
+  fsGroup: 65534
+
+nodeSelector: {}
+
+tolerations:
+  - key: kiam-server
+    operator: Equal
+    value: "false"
+    effect: NoExecute
+  - key: kiam-server
+    operator: Equal
+    value: "false"
+    effect: NoSchedule
+
+affinity: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::1234567890:role/k8s-learn
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
 resources:
   limits:
@@ -21,3 +53,39 @@ service:
   port: 80
   targetPort: 8080
   type: ClusterIP
+
+extraEnv:
+  EXTRA_VALUE: dummy
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+ingress:
+  # -- Whether to expose the ingress controller to the public world
+  enabled: true
+  # ingress.annotations -- Annotations like `kubernetes.io/ingress.class: nginx` to be assigned to the ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  # ingress.hosts -- List of hostnames to be assigned to the ingress
+  hosts:
+    - host: app.dxas90.xyz
+      paths:
+        - path: "/"
+  tls:
+    - hosts:
+        - app.dxas90.xyz
+    - secretName: app-dxas90-xyz-prod
+      hosts:
+        - app.dxas90.xyz
+
+persistence:
+  enabled: true #TODO
+  capacity: 8Mi

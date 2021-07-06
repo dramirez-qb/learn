@@ -3,17 +3,9 @@ kind: Ingress
 apiVersion: extensions/v1beta1
 metadata:
   name: learn
-  annotations:
-    kubernetes.io/ingress.class: kong
-    cert-manager.io/cluster-issuer: letsencrypt-staging
-    konghq.com/override: https-only
-    kubernetes.io/tls-acme: "true"
 spec:
   rules:
-    - host: dev-learn.dxas90.xyz
+    - host: app.dxas90.xyz
       http:
         paths:
-          - path: /
-            backend:
-              serviceName: learn
-              servicePort: web
+          - path: /develop
