@@ -1,4 +1,4 @@
-image: dxas90/learn:latest
+image: dxas90/learn:v0.0.11
 
 imageConfig:
   pullPolicy: IfNotPresent
