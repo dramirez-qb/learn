@@ -53,7 +53,6 @@ steps:
   - name: build branch image (build)
     image: banzaicloud/drone-kaniko
     settings:
-      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
@@ -61,10 +60,9 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      tag:
+      tags:
         - ${DRONE_BRANCH##feature/}
       repo: dxas90/learn
-      dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
@@ -78,7 +76,6 @@ steps:
   - name: build test image (build)
     image: banzaicloud/drone-kaniko
     settings:
-      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
@@ -86,10 +83,9 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      tag:
+      tags:
         - test
       repo: dxas90/learn
-      dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
@@ -103,7 +99,6 @@ steps:
   - name: build staging image (build)
     image: banzaicloud/drone-kaniko
     settings:
-      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
@@ -111,10 +106,9 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      tag:
+      tags:
         - latest
       repo: dxas90/learn
-      dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
@@ -128,7 +122,6 @@ steps:
   - name: build production image (build)
     image: banzaicloud/drone-kaniko
     settings:
-      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
@@ -136,10 +129,9 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      tag:
+      tags:
         - ${DRONE_TAG}
       repo: dxas90/learn
-      dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
