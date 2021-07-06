@@ -61,7 +61,7 @@ steps:
       password:
         from_secret: docker_password
       tags:
-        - ${DRONE_BRANCH##feature/}
+        - ${DRONE_BRANCH//\//_}
       repo: dxas90/learn
       registry: harbor.dxas90.xyz
     depends_on:
