@@ -9,3 +9,7 @@ spec:
       http:
         paths:
           - path: /develop
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: learn
+              servicePort: web
