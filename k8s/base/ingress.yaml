@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: learn
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-staging
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
