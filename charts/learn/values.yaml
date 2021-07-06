@@ -82,9 +82,7 @@ ingress:
   tls:
     - hosts:
         - app.dxas90.xyz
-    - secretName: app-dxas90-xyz-prod
-      hosts:
-        - app.dxas90.xyz
+      secretName: app-dxas90-xyz-prod
 
 persistence:
   enabled: true #TODO
