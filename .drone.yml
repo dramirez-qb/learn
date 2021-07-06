@@ -56,6 +56,7 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
@@ -79,6 +80,7 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
@@ -102,6 +104,7 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
@@ -125,6 +128,7 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
