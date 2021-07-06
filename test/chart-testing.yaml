@@ -1,6 +1,5 @@
 # See https://github.com/helm/chart-testing#configuration
 remote: origin
-target-branch: master
 helm-extra-args: --timeout 800s
 check-version-increment: false
 validate-maintainers: false
