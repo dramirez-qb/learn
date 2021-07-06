@@ -56,13 +56,12 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
       tags:
-        - ${DRONE_BRANCH//\//_}
+        - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
       repo: dxas90/learn
       registry: harbor.dxas90.xyz
     depends_on:
@@ -80,7 +79,6 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
@@ -104,7 +102,6 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
@@ -128,7 +125,6 @@ steps:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
         - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-        - AUTHOR=${DRONE_COMMIT_AUTHOR_EMAIL}
       username:
         from_secret: docker_username
       password:
