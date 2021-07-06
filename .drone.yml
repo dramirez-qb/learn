@@ -1,4 +1,3 @@
----
 kind: pipeline
 type: docker
 name: learn-app-development
@@ -15,8 +14,6 @@ steps:
     commands:
       - git fetch --tags
       - rm -f .tags
-      - printf "%s\n" $(git describe --abbrev=0 --tags || echo $DRONE_BRANCH | tr '/' '-') > .tags
-      - printf "Tags to build\n-------------\n%s\n" $(cat .tags)
 
   - name: Run chart-testing (lint)
     image: dxas90/drone-helper
@@ -24,6 +21,16 @@ steps:
       - sh -c "ct lint --config test/chart-testing.yaml"
     depends_on:
       - fetch
+    when:
+      branch:
+        include:
+          - feature/*
+          - master
+          - develop
+      event:
+        include:
+          - push
+          - pull_request
 
   - name: UnitTest (test)
     image: golang
@@ -32,8 +39,18 @@ steps:
       - go build
     depends_on:
       - fetch
+    when:
+      branch:
+        include:
+          - feature/*
+          - master
+          - develop
+      event:
+        include:
+          - push
+          - pull_request
 
-  - name: Go image (build)
+  - name: build branch image (build)
     image: banzaicloud/drone-kaniko
     settings:
       skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
@@ -44,50 +61,89 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
+      tag:
+        - ${DRONE_BRANCH##feature/}
       repo: dxas90/learn
       dockerfile: Dockerfile
       registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
+    when:
+      branch:
+        - feature/*
+      event:
+        - push
 
-  - name: Run Kustomize
-    image: dxas90/drone-helper
-    commands:
-      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git describe --abbrev=0 --tags)"
+  - name: build test image (build)
+    image: banzaicloud/drone-kaniko
+    settings:
+      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
+      build_args:
+        - COMMIT_SHA=${DRONE_COMMIT_SHA}
+        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tag:
+        - test
+      repo: dxas90/learn
+      dockerfile: Dockerfile
+      registry: harbor.dxas90.xyz
     depends_on:
-      - Go image (build)
+      - Run chart-testing (lint)
+      - UnitTest (test)
     when:
       branch:
         - develop
+      event:
+        - push
 
-trigger:
-  event:
-    - push
----
-kind: pipeline
-type: docker
-name: learn-app-release
+  - name: build staging image (build)
+    image: banzaicloud/drone-kaniko
+    settings:
+      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
+      build_args:
+        - COMMIT_SHA=${DRONE_COMMIT_SHA}
+        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tag:
+        - latest
+      repo: dxas90/learn
+      dockerfile: Dockerfile
+      registry: harbor.dxas90.xyz
+    depends_on:
+      - Run chart-testing (lint)
+      - UnitTest (test)
+    when:
+      branch:
+        - master
+      event:
+        - pull_request
 
-environment:
-  namespace: default
-
-clone:
-  depth: 50
-
-steps:
-  - name: fetch
-    image: alpine/git
-    commands:
-      - git fetch --tags
-
-  - name: Run Kustomize
-    image: dxas90/drone-helper
-    commands:
-      - sh -c "cd k8s; kustomize edit set image dxas90/learn:$(git describe --abbrev=0 --tags)"
-
-trigger:
-  branch:
-    - master
-  event:
-    - tag
+  - name: build production image (build)
+    image: banzaicloud/drone-kaniko
+    settings:
+      skip_tls_verify: false # set to true for testing registries ONLY with self-signed certs
+      build_args:
+        - COMMIT_SHA=${DRONE_COMMIT_SHA}
+        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      tag:
+        - ${DRONE_TAG}
+      repo: dxas90/learn
+      dockerfile: Dockerfile
+      registry: harbor.dxas90.xyz
+    depends_on:
+      - Run chart-testing (lint)
+      - UnitTest (test)
+    when:
+      event:
+        - tag
