@@ -14,10 +14,6 @@ steps:
     commands:
       - git fetch --tags
       - rm -f .tags
-    when:
-      branch:
-        exclude:
-          - release/*
 
   - name: Run chart-testing (lint)
     image: dxas90/drone-helper
