@@ -85,5 +85,5 @@ ingress:
       secretName: app-dxas90-xyz-prod
 
 persistence:
-  enabled: true #TODO
+  enabled: true
   capacity: 8Mi
