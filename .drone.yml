@@ -16,7 +16,7 @@ steps:
       - rm -f .tags
 
   - name: Run chart-testing (lint)
-    image: dxas90/drone-helper
+    image: dxas90/drone-helper:v0.0.3
     commands:
       - sh -c "ct lint --config test/chart-testing.yaml"
     depends_on:
