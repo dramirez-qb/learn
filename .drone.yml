@@ -119,7 +119,7 @@ steps:
       branch:
         - master
       event:
-        - pull_request
+        - push
 
   - name: build production image (build)
     image: banzaicloud/drone-kaniko
