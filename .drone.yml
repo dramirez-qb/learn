@@ -22,12 +22,6 @@ steps:
     depends_on:
       - fetch
     when:
-      branch:
-        include:
-          - feature/*
-          - release/*
-          - master
-          - develop
       event:
         include:
           - push
@@ -41,12 +35,6 @@ steps:
     depends_on:
       - fetch
     when:
-      branch:
-        include:
-          - feature/*
-          - release/*
-          - master
-          - develop
       event:
         include:
           - push
@@ -72,29 +60,6 @@ steps:
     when:
       branch:
         - feature/*
-      event:
-        - push
-
-  - name: build test image (build)
-    image: banzaicloud/drone-kaniko
-    settings:
-      build_args:
-        - COMMIT_SHA=${DRONE_COMMIT_SHA}
-        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      tags:
-        - test
-      repo: dxas90/learn
-      registry: harbor.dxas90.xyz
-    depends_on:
-      - Run chart-testing (lint)
-      - UnitTest (test)
-    when:
-      branch:
-        - develop
       event:
         - push
 
