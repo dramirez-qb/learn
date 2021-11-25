@@ -22,12 +22,6 @@ steps:
     depends_on:
       - fetch
     when:
-      branch:
-        include:
-          - feature/*
-          - release/*
-          - master
-          - develop
       event:
         include:
           - push
@@ -41,12 +35,6 @@ steps:
     depends_on:
       - fetch
     when:
-      branch:
-        include:
-          - feature/*
-          - release/*
-          - master
-          - develop
       event:
         include:
           - push
@@ -86,7 +74,7 @@ steps:
       password:
         from_secret: docker_password
       tags:
-        - test
+        - testing-${DRONE_PULL_REQUEST}
       repo: dxas90/learn
       registry: harbor.dxas90.xyz
     depends_on:
@@ -94,9 +82,9 @@ steps:
       - UnitTest (test)
     when:
       branch:
-        - develop
+        - master
       event:
-        - push
+        - pull_request
 
   - name: build staging image (build)
     image: banzaicloud/drone-kaniko
