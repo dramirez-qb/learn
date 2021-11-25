@@ -90,11 +90,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 10m
-              memory: 48Mi
+              cpu: 25m
+              memory: 263M
             requests:
-              cpu: 10m
-              memory: 48Mi
+              cpu: 25m
+              memory: 263M
           # https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/
           readinessProbe:
             httpGet:

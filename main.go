@@ -1,17 +1,22 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"flag"
 	"fmt"
 	"html/template"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/sys/unix"
 )
 
 type Welcome struct {
@@ -77,6 +82,7 @@ func helloHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func fibHandler(response http.ResponseWriter, request *http.Request) {
+	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(45)
 	log.Printf("random: %+v", num)
 	fmt.Fprintf(response, "%d\n", FibonacciRecursion(num))
@@ -102,7 +108,6 @@ func main() {
 		fmt.Printf("version: %s\n", gitCommit)
 		return
 	}
-	rand.Seed(time.Now().UnixNano())
 	http.Handle("/", use(helloHandler, withLogging, withTracing))
 	http.Handle("/fib", use(fibHandler, withLogging, withTracing))
 	http.Handle("/healthz", use(healthCheckHandler))
@@ -110,7 +115,39 @@ func main() {
 	http.Handle("/ping", use(pongHandler, withLogging, withTracing))
 	http.Handle("/static/", http.FileServer(http.FS(content)))
 	log.Printf("starting listening on %s\n", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
+	lc := net.ListenConfig{
+		Control: control,
 	}
+	l, err := lc.Listen(context.TODO(), "tcp", ":"+port)
+	if err != nil {
+		fmt.Println(err)
+	}
+	exitCh := make(chan os.Signal, 1)
+	server := &http.Server{Addr: l.Addr().String()}
+
+	signal.Notify(exitCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
+	go func() {
+		defer func() { exitCh <- syscall.SIGTERM }()
+		if err := http.Serve(l, nil); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	<-exitCh
+	server.Shutdown(context.Background()) // Shutdown the server
+}
+
+func control(network, address string, c syscall.RawConn) error {
+	var err error
+	c.Control(func(fd uintptr) {
+		err = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)
+		if err != nil {
+			return
+		}
+
+		err = unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, 1)
+		if err != nil {
+			return
+		}
+	})
+	return err
 }
