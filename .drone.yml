@@ -16,7 +16,7 @@ steps:
       - rm -f .tags
 
   - name: Run chart-testing (lint)
-    image: dxas90/drone-helper
+    image: dxas90/drone-helper:v0.0.3
     commands:
       - sh -c "ct lint --config test/chart-testing.yaml"
     depends_on:
@@ -74,7 +74,7 @@ steps:
       password:
         from_secret: docker_password
       tags:
-        - testing-${DRONE_PULL_REQUEST}
+        - test
       repo: dxas90/learn
       registry: harbor.dxas90.xyz
     depends_on:
@@ -82,9 +82,9 @@ steps:
       - UnitTest (test)
     when:
       branch:
-        - master
+        - develop
       event:
-        - pull_request
+        - push
 
   - name: build staging image (build)
     image: banzaicloud/drone-kaniko
