@@ -27,5 +27,5 @@ build:
 containerize:
   stage: containerize
   extends: .dockerize
-  only:
-    - master
+    #  only:
+    #    - master
