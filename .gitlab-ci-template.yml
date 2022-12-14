@@ -20,5 +20,5 @@
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [""]    
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_DEPLOY_USER\",\"password\":\"$CI_DEPLOY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
