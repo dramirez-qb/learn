@@ -1,7 +1,6 @@
 # https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  - project: dxas90/learn
-    file: .gitlab-ci-template.yml
+  - local: .gitlab-ci-template.yml
 
 stages:
   - test
