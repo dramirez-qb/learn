@@ -23,6 +23,12 @@ build:
   only:
     - master
 
+release:
+  stage: containerize
+  extends: .go-release
+  only:
+    - master
+
 containerize:
   stage: containerize
   extends: .dockerize
