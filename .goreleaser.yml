@@ -1,5 +1,21 @@
 # This is an example .goreleaser.yml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
+gitlab_urls:
+  api: https://gitlab.dxas90.xyz/api/v4/
+  download: https://gitlab.dxas90.xyz
+
+  # set to true if you use a self-signed certificate
+  skip_tls_verify: false
+
+  # set to true if you want to upload to the Package Registry rather than attachments
+  # Only works with GitLab 13.5+
+  # Since: v1.3.
+  use_package_registry: true
+
+  # Set this if you set GITLAB_TOKEN to the value of CI_JOB_TOKEN.
+  # Default: false
+  # Since: v1.11.
+  use_job_token: true
 before:
   hooks:
     - go mod tidy
