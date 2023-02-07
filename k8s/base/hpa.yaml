@@ -1,5 +1,5 @@
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: learn
@@ -21,7 +21,7 @@ spec:
       resource:
         name: memory
         target:
-          type: AverageValue
+          type: Value
           averageValue: 50Mi
     # - type: Object
     #   object:

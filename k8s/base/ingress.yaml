@@ -1,10 +1,10 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: learn
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod-traefik
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
@@ -21,5 +21,8 @@ spec:
           - path: /
             pathType: ImplementationSpecific
             backend:
-              serviceName: learn
-              servicePort: web
+              service:
+                name: learn
+                port:
+                  name: web
+
