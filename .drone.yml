@@ -54,6 +54,7 @@ steps:
         - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
       repo: dxas90/learn
       registry: gitea.dxas90.xyz
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -77,6 +78,7 @@ steps:
         - test
       repo: dxas90/learn
       registry: gitea.dxas90.xyz
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -100,6 +102,7 @@ steps:
         - latest
       repo: dxas90/learn
       registry: gitea.dxas90.xyz
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -123,6 +126,7 @@ steps:
         - ${DRONE_TAG}
       repo: dxas90/learn
       registry: gitea.dxas90.xyz
+      expand-repo: false
     depends_on:
       - build staging image (build)
     when:
