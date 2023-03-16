@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: learn-app-development
+name: learn-app-test-build
 
 environment:
   namespace: default
@@ -15,18 +15,6 @@ steps:
       - git fetch --tags
       - rm -f .tags
 
-  - name: Run chart-testing (lint)
-    image: dxas90/drone-helper:v0.0.3
-    commands:
-      - sh -c "ct lint --config test/chart-testing.yaml"
-    depends_on:
-      - fetch
-    when:
-      event:
-        include:
-          - push
-          - pull_request
-
   - name: UnitTest (test)
     image: golang
     commands:
@@ -40,6 +28,52 @@ steps:
           - push
           - pull_request
 
+  - name: Run chart-testing (lint)
+    image: dxas90/drone-helper:v0.1.0
+    commands:
+      - sh -c "ct lint --config test/chart-testing.yaml"
+    depends_on:
+      - fetch
+    when:
+      event:
+        include:
+          - push
+          - pull_request
+
+  - name: Build helm chart (build)
+    image: dxas90/drone-helper:v0.1.0
+    environment:
+      APP_VERSION: 1.0.${DRONE_BUILD_NUMBER} # TODO
+      CHART_VERSION: 1.0.${DRONE_BUILD_NUMBER}
+    commands:
+      - sh -c "envsubst < charts/learn/Chart.yaml.tmpl | cat > charts/learn/Chart.yaml"
+      - sh -c "tar czf /tmp/chart${DRONE_BUILD_NUMBER}.tgz -C charts/learn/ ."
+    depends_on:
+      - fetch
+    when:
+      event:
+        include:
+          - push
+          - pull_request
+
+  - name: Publish helm chart (publish)
+    image: dxas90/drone-helper:v0.1.0
+    commands:
+      - sh -c "curl --user ${USERNAME}:${PASSWORD} -X POST --upload-file /tmp/chart${DRONE_BUILD_NUMBER}.tgz ${REPO}/api/packages/${USERNAME}/helm/api/charts"
+    environment:
+      USERNAME:
+        from_secret: helm_username
+      PASSWORD:
+        from_secret: helm_password
+      REPO:
+        from_secret: helm_repo
+    depends_on:
+      - Run chart-testing (lint)
+    when:
+      event:
+        include:
+          - push
+
   - name: build branch image (build)
     image: plugins/kaniko
     settings:
@@ -52,7 +86,7 @@ steps:
         from_secret: docker_password
       tags:
         - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
-      repo: gitea.dxas90.xyz/dxas90/learn
+      repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
     depends_on:
@@ -61,29 +95,8 @@ steps:
     when:
       branch:
         - feature/*
-      event:
-        - push
-
-  - name: build test image (build)
-    image: plugins/kaniko
-    settings:
-      build_args:
-        - COMMIT_SHA=${DRONE_COMMIT_SHA}
-        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      tags:
-        - test
-      repo: gitea.dxas90.xyz/dxas90/learn
-      registry: gitea.dxas90.xyz
-      expand-repo: false
-    depends_on:
-      - Run chart-testing (lint)
-      - UnitTest (test)
-    when:
-      branch:
+        - hotfix/*
+        - bugfix/*
         - develop
       event:
         - push
@@ -100,7 +113,7 @@ steps:
         from_secret: docker_password
       tags:
         - latest
-      repo: gitea.dxas90.xyz/dxas90/learn
+      repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
     depends_on:
@@ -124,7 +137,7 @@ steps:
         from_secret: docker_password
       tags:
         - ${DRONE_TAG}
-      repo: gitea.dxas90.xyz/dxas90/learn
+      repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
     depends_on:
