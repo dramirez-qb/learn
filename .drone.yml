@@ -58,8 +58,6 @@ steps:
 
   - name: Publish helm chart (publish)
     image: dxas90/drone-helper:v0.1.0
-    commands:
-      - sh -c "curl --user ${USERNAME}:${PASSWORD} -X POST --upload-file /tmp/chart${DRONE_BUILD_NUMBER}.tgz ${REPO}/api/packages/${USERNAME}/helm/api/charts"
     environment:
       USERNAME:
         from_secret: helm_username
@@ -67,6 +65,8 @@ steps:
         from_secret: helm_password
       REPO:
         from_secret: helm_repo
+    commands:
+      - sh -c "curl --user \"${USERNAME}:${PASSWORD}\" -X POST --upload-file /tmp/chart${DRONE_BUILD_NUMBER}.tgz ${REPO}/api/packages/${USERNAME}/helm/api/charts"
     depends_on:
       - Run chart-testing (lint)
     when:
