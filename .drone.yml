@@ -52,9 +52,9 @@ steps:
         from_secret: docker_password
       tags:
         - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
-      repo: dxas90/learn
+      repo: gitea.dxas90.xyz/dxas90/learn
       registry: gitea.dxas90.xyz
-      expand-repo: true
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -76,9 +76,9 @@ steps:
         from_secret: docker_password
       tags:
         - test
-      repo: dxas90/learn
+      repo: gitea.dxas90.xyz/dxas90/learn
       registry: gitea.dxas90.xyz
-      expand-repo: true
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -100,9 +100,9 @@ steps:
         from_secret: docker_password
       tags:
         - latest
-      repo: dxas90/learn
+      repo: gitea.dxas90.xyz/dxas90/learn
       registry: gitea.dxas90.xyz
-      expand-repo: true
+      expand-repo: false
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -124,9 +124,9 @@ steps:
         from_secret: docker_password
       tags:
         - ${DRONE_TAG}
-      repo: dxas90/learn
+      repo: gitea.dxas90.xyz/dxas90/learn
       registry: gitea.dxas90.xyz
-      expand-repo: true
+      expand-repo: false
     depends_on:
       - build staging image (build)
     when:
