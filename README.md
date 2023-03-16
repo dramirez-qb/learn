@@ -5,7 +5,6 @@ this is to learn openshift :)
 oc new-app https://github.com/dxas90/learn.git
 ```
 
-## What we want
 ```text
           Git Actions:                CI System Actions:
 

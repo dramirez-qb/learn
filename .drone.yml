@@ -41,7 +41,7 @@ steps:
           - pull_request
 
   - name: build branch image (build)
-    image: plugins/kaniko
+    image: banzaicloud/drone-kaniko
     settings:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
@@ -53,7 +53,7 @@ steps:
       tags:
         - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
       repo: dxas90/learn
-      registry: gitea.dxas90.xyz
+      registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -64,7 +64,7 @@ steps:
         - push
 
   - name: build test image (build)
-    image: plugins/kaniko
+    image: banzaicloud/drone-kaniko
     settings:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
@@ -76,7 +76,7 @@ steps:
       tags:
         - test
       repo: dxas90/learn
-      registry: gitea.dxas90.xyz
+      registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -87,7 +87,7 @@ steps:
         - push
 
   - name: build staging image (build)
-    image: plugins/kaniko
+    image: banzaicloud/drone-kaniko
     settings:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
@@ -99,7 +99,7 @@ steps:
       tags:
         - latest
       repo: dxas90/learn
-      registry: gitea.dxas90.xyz
+      registry: harbor.dxas90.xyz
     depends_on:
       - Run chart-testing (lint)
       - UnitTest (test)
@@ -110,7 +110,7 @@ steps:
         - push
 
   - name: build production image (build)
-    image: plugins/kaniko
+    image: banzaicloud/drone-kaniko
     settings:
       build_args:
         - COMMIT_SHA=${DRONE_COMMIT_SHA}
@@ -122,7 +122,7 @@ steps:
       tags:
         - ${DRONE_TAG}
       repo: dxas90/learn
-      registry: gitea.dxas90.xyz
+      registry: harbor.dxas90.xyz
     depends_on:
       - build staging image (build)
     when:
