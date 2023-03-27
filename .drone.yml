@@ -66,7 +66,7 @@ steps:
       REPO:
         from_secret: helm_repo
     commands:
-      - sh -c "curl --user \"${USERNAME}:${PASSWORD}\" -X POST --upload-file /tmp/chart${DRONE_BUILD_NUMBER}.tgz ${REPO}/api/packages/${USERNAME}/helm/api/charts"
+      - sh -c curl --user "${USERNAME}:${PASSWORD}" -X POST --upload-file /tmp/chart${DRONE_BUILD_NUMBER}.tgz ${REPO}/api/packages/${USERNAME}/helm/api/charts'
     depends_on:
       - Run chart-testing (lint)
     when:
