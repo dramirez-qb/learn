@@ -29,7 +29,7 @@ steps:
           - pull_request
 
   - name: Run chart-testing (lint)
-    image: dxas90/drone-helper:v0.2.0
+    image: dxas90/drone-helper:v0.3.0
     commands:
       - sh -c "ct lint --config test/chart-testing.yaml"
     depends_on:
@@ -41,7 +41,7 @@ steps:
           - pull_request
 
   - name: Build helm chart (build)
-    image: dxas90/drone-helper:v0.2.0
+    image: dxas90/drone-helper:v0.3.0
     environment:
       APP_VERSION: 1.0.${DRONE_BUILD_NUMBER} # TODO
       CHART_VERSION: 1.0.${DRONE_BUILD_NUMBER}
@@ -57,7 +57,7 @@ steps:
           - pull_request
 
   - name: Publish helm chart (publish)
-    image: dxas90/drone-helper:v0.2.0
+    image: dxas90/drone-helper:v0.3.0
     environment:
       USERNAME:
         from_secret: helm_username
