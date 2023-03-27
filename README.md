@@ -1,5 +1,16 @@
-# learn [![Build Status](https://drone.dxas90.xyz/api/badges/dxas90/learn/status.svg)](https://drone.dxas90.xyz/dxas90/learn)
-this is to learn openshift :)
+# learn [![Build Status](https://img.shields.io/drone/build/dxas90/learn?server=https%3A%2F%2Fdrone.dxas90.xyz)](https://drone.dxas90.xyz/dxas90/learn)
+
+![Lines of code](https://img.shields.io/tokei/lines/github/dxas90/learn)  
+just to learn my stuff :)
+
+### Binaries
+
+[![Releases](https://img.shields.io/github/v/release/dramirez-qb/learn.svg)](https://github.com/dramirez-qb/learn/releases) [![Releases](https://img.shields.io/github/downloads/dramirez-qb/learn/total.svg)](https://github.com/dramirez-qb/learn/releases)
+
+
+### Docker
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/dxas90/learn.svg)](https://hub.docker.com/r/dxas90/learn/) [![Image Size](https://img.shields.io/docker/image-size/dxas90/learn/latest)](https://dxas90.work/pulls/dxas90)
 
 ```sh
 oc new-app https://github.com/dxas90/learn.git
@@ -48,3 +59,7 @@ oc new-app https://github.com/dxas90/learn.git
          +------------+             |     Production      |
                                     +---------------------+
 ```
+
+### LICENCE
+
+![GitHub](https://img.shields.io/github/license/dxas90/learn)
