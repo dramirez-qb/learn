@@ -83,7 +83,7 @@ steps:
       password:
         from_secret: docker_password
       tags:
-        - ${DRONE_TAG:-${DRONE_BRANCH//\//_}-$DRONE_BUILD_NUMBER-branch}
+        - ${DRONE_TAG:-${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch}
       repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
