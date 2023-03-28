@@ -1,131 +1,75 @@
+---
 kind: pipeline
 type: docker
-name: learn-app-test-build
-
-environment:
-  namespace: default
+name: learn-app-build
 
 clone:
   depth: 50
 
+environment:
+  pipeline: learn-app-build
+
+trigger:
+  event:
+  - push
+
+volumes:
+- name: go-deps
+  host:
+    path: /var/lib/cache
+
 steps:
-  - name: fetch
-    image: alpine/git
+  - name: Fetch all the code information [CODE]
+    image: alpine/git:2.36.3
     commands:
       - git fetch --tags
       - rm -f .tags
+    when:
+      event:
+       - tag
 
-  - name: UnitTest (test)
-    image: golang
+  - name: Get all code dependencies [CODE]
+    image: golang:1.20.2-alpine3.16
+    commands:
+      - go mod tidy
+      - go mod vendor
+    volumes:
+    - name: go-deps
+      path: /go
+    depends_on:
+      - Fetch all the code information [CODE]
+
+  - name: Run UnitTest [TEST]
+    image: golang:1.20.2-alpine3.16
     commands:
       - go test -v
+    volumes:
+    - name: go-deps
+      path: /go
+    depends_on:
+      - Get all code dependencies [CODE]
+
+  - name: Run StaticCheck [LINT]
+    image: dxas90/drone-helper:v0.4.0
+    commands:
+      - staticcheck
+    volumes:
+    - name: go-deps
+      path: /go
+    depends_on:
+      - Get all code dependencies [CODE]
+
+  - name: Build the code [BUILD]
+    image: golang:1.20.2-alpine3.16
+    commands:
       - go build
+    volumes:
+    - name: go-deps
+      path: /go
     depends_on:
-      - fetch
-    when:
-      event:
-        include:
-          - push
-          - pull_request
+      - Run UnitTest [TEST]
 
-  - name: Run chart-testing (lint)
-    image: dxas90/drone-helper:v0.3.0
-    commands:
-      - sh -c "ct lint --config test/chart-testing.yaml"
-    depends_on:
-      - fetch
-    when:
-      event:
-        include:
-          - push
-          - pull_request
-
-  - name: Build helm chart (build)
-    image: dxas90/drone-helper:v0.3.0
-    environment:
-      APP_VERSION: 1.0.${DRONE_BUILD_NUMBER} # TODO
-      CHART_VERSION: 1.0.${DRONE_BUILD_NUMBER}
-    commands:
-      - sh -c "envsubst < charts/learn/Chart.yaml.tmpl | cat > charts/learn/Chart.yaml"
-      - sh -c "tar czf /tmp/chart${DRONE_BUILD_NUMBER}.tgz -C charts/learn/ ."
-    depends_on:
-      - fetch
-    when:
-      event:
-        include:
-          - push
-          - pull_request
-
-  - name: Publish helm chart (publish)
-    image: dxas90/drone-helper:v0.3.0
-    environment:
-      USERNAME:
-        from_secret: helm_username
-      PASSWORD:
-        from_secret: helm_password
-      REPO:
-        from_secret: helm_repo
-    commands:
-      - sh -c 'curl --user "${USERNAME}:${PASSWORD}" -X POST --upload-file "/tmp/chart${DRONE_BUILD_NUMBER}.tgz" "${REPO}/api/packages/${USERNAME}/helm/api/charts"'
-    depends_on:
-      - Run chart-testing (lint)
-    when:
-      event:
-        include:
-          - push
-
-  - name: build branch image (build)
-    image: plugins/kaniko
-    settings:
-      build_args:
-        - COMMIT_SHA=${DRONE_COMMIT_SHA}
-        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      tags:
-        - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
-      repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
-      registry: gitea.dxas90.xyz
-      expand-repo: false
-    depends_on:
-      - Run chart-testing (lint)
-      - UnitTest (test)
-    when:
-      branch:
-        - feature/*
-        - hotfix/*
-        - bugfix/*
-        - develop
-      event:
-        - push
-
-  - name: build staging image (build)
-    image: plugins/kaniko
-    settings:
-      build_args:
-        - COMMIT_SHA=${DRONE_COMMIT_SHA}
-        - COMMIT_AUTHOR_EMAIL=${DRONE_COMMIT_AUTHOR_EMAIL}
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      tags:
-        - latest
-      repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
-      registry: gitea.dxas90.xyz
-      expand-repo: false
-    depends_on:
-      - Run chart-testing (lint)
-      - UnitTest (test)
-    when:
-      branch:
-        - master
-      event:
-        - push
-
-  - name: build production image (build)
+  - name: Build docker image [BUILD]
     image: plugins/kaniko
     settings:
       build_args:
@@ -137,11 +81,38 @@ steps:
         from_secret: docker_password
       tags:
         - ${DRONE_TAG}
+        - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
       repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
     depends_on:
-      - build staging image (build)
-    when:
-      event:
-        - tag
+      - Build the code [BUILD]
+
+---
+kind: pipeline
+type: docker
+name: learn-app-deploy-staging
+
+clone:
+  disable: true
+
+depends_on:
+  - learn-app-build
+
+environment:
+  pipeline: learn-app-deploy-staging
+
+trigger:
+  branch:
+  - develop
+  event:
+  - tag
+  ref:
+  - refs/tags/^v[0-9]+\.[0-9]+\.[0-9]+/
+  - refs/tags/^v[0-9]+\.[0-9]+\.[0-9]+\-staging-.*/
+
+steps:
+  - name: Deploy Staging [DEPLOY]
+    image: dxas90/drone-helper:v0.4.0
+    commands:
+      - echo "Deploy Staging ${DRONE_TAG}"

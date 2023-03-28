@@ -96,6 +96,7 @@ func FibonacciRecursion(n int) int {
 }
 
 // content is our static web server content.
+//
 //go:embed static/* templates
 var content embed.FS
 var gitCommit string
@@ -125,7 +126,7 @@ func main() {
 	exitCh := make(chan os.Signal, 1)
 	server := &http.Server{Addr: l.Addr().String()}
 
-	signal.Notify(exitCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
+	signal.Notify(exitCh, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		defer func() { exitCh <- syscall.SIGTERM }()
 		if err := http.Serve(l, nil); err != nil {
