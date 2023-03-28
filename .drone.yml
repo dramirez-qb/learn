@@ -50,9 +50,10 @@ steps:
       - Get all code dependencies [CODE]
 
   - name: Run StaticCheck [LINT]
-    image: dxas90/drone-helper:v0.4.0
+    image: golang:1.20.2-alpine3.16
     failure: ignore
     commands:
+      - go install honnef.co/go/tools/cmd/staticcheck@latest
       - staticcheck /drone/src
     volumes:
     - name: go-deps
