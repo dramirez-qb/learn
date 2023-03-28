@@ -70,6 +70,7 @@ steps:
       path: /go
     depends_on:
       - Run UnitTest [TEST]
+      - Run StaticCheck [LINT]
 
   - name: Build docker image [BUILD]
     image: plugins/kaniko
