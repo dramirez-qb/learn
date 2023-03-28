@@ -119,3 +119,31 @@ steps:
     image: dxas90/drone-helper:v0.4.0
     commands:
       - echo "Deploy Staging ${DRONE_TAG}"
+
+---
+kind: pipeline
+type: docker
+name: learn-app-deploy-prod
+
+clone:
+  disable: true
+
+depends_on:
+  - learn-app-deploy-staging
+
+environment:
+  pipeline: learn-app-deploy-staging
+
+trigger:
+  branch:
+  - master
+  event:
+  - promote
+  target:
+  - production
+
+steps:
+  - name: Deploy Production [DEPLOY]
+    image: dxas90/drone-helper:v0.4.0
+    commands:
+      - echo "Deploy Production ${DRONE_TAG}"
