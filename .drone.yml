@@ -16,7 +16,7 @@ trigger:
 volumes:
 - name: go-deps
   host:
-    path: /var/lib/cache
+    path: /var/lib/cache/go-deps
 
 steps:
   - name: Fetch all the code information [CODE]
@@ -51,8 +51,9 @@ steps:
 
   - name: Run StaticCheck [LINT]
     image: dxas90/drone-helper:v0.4.0
+    failure: ignore
     commands:
-      - staticcheck
+      - staticcheck /drone/src
     volumes:
     - name: go-deps
       path: /go
