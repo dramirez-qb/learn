@@ -53,7 +53,7 @@ steps:
     image: golang:1.20.2-alpine3.16
     failure: ignore
     commands:
-      - go install honnef.co/go/tools/cmd/staticcheck@latest
+      - which staticcheck || go install honnef.co/go/tools/cmd/staticcheck@latest
       - staticcheck /drone/src
     volumes:
     - name: go-deps
