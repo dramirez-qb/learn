@@ -107,6 +107,7 @@ environment:
 trigger:
   branch:
   - develop
+  - master
   event:
   - tag
   ref:
@@ -134,8 +135,6 @@ environment:
   pipeline: learn-app-deploy-staging
 
 trigger:
-  branch:
-  - master
   event:
   - promote
   target:
