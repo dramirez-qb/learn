@@ -6,10 +6,10 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod-traefik
     kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  ingressClassName: traefik
   tls:
     - hosts:
         - app.dxas90.xyz
