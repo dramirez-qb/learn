@@ -1,3 +1,5 @@
+default:
+  image: node
 .go-build:
   image: golang:alpine
   script:
