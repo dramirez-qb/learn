@@ -17,7 +17,7 @@
 
 .go-release:
   image:
-    name: alpine
+    name: node
   script:
     - curl -sfL https://goreleaser.com/static/run | bash -s -- release --rm-dist
 
