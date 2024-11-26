@@ -16,3 +16,7 @@ docker-compose.yml
 # kubernetes files
 k8s/
 .*.yml
+charts/
+argo/
+tests/
+.old*

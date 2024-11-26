@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 APP_NAME = learn
-DOCKER_REPO = dxas90
-BIN_PLATFORMS := go
+export SELF ?= $(MAKE)
+export DOCKER_REPO ?= dxas90
 
 # This version-strategy uses git tags to set the version string
 git_branch	   := $(shell git rev-parse --abbrev-ref HEAD)
@@ -15,7 +15,7 @@ ifdef git_tag
 	VERSION := $(git_tag)
 	version_strategy := tag
 else
-	ifeq (,$(findstring $(git_branch),master HEAD))
+	ifeq (,$(findstring $(git_branch),develop HEAD))
 		ifneq (,$(patsubst release-%,,$(git_branch)))
 			VERSION := $(git_branch)
 			version_strategy := branch
@@ -23,23 +23,34 @@ else
 	endif
 endif
 
+define assert-set
+        @[ -n "$($1)" ] || (echo "$(1) not defined in $(@)"; exit 1)
+endef
+
 .PHONY: version
 
-container-%:
-	@docker build -t $(DOCKER_REPO)/$(APP_NAME):$(firstword $(subst _, ,$*))-${VERSION} -f docker/$(firstword $(subst _, ,$*)).dockerfile .
+clean:
+	@rm -rf ${APP_NAME}-${VERSION}
 
-push-%:
-	@docker push $(DOCKER_REPO)/$(APP_NAME):$(firstword $(subst _, ,$*))-${VERSION}
+container-build:
+	@docker build -t $(DOCKER_REPO)/$(APP_NAME):${VERSION} -f Dockerfile .
 
-all-container: $(addprefix container-, $(BIN_PLATFORMS))
+container-push:
+	@docker push $(DOCKER_REPO)/$(APP_NAME):${VERSION}
 
-all-push: $(addprefix push-, $(BIN_PLATFORMS))
+build-%:
+	@go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o $*-${VERSION} .
+
+build: clean
+	@${SELF} build-${APP_NAME}
+
+test:
+	go test -v -json ./... ; exit 0
 
 version:
-	@echo ::set-output name=version::$(VERSION)
-	@echo ::set-output name=version_strategy::$(version_strategy)
-	@echo ::set-output name=git_tag::$(git_tag)
-	@echo ::set-output name=git_branch::$(git_branch)
-	@echo ::set-output name=commit_hash::$(commit_hash)
-	@echo ::set-output name=commit_timestamp::$(commit_timestamp)
-
+	@echo "name=$(VERSION)" | tee  ${GITHUB_OUTPUT}
+	@echo "version_strategy=$(version_strategy)" | tee  ${GITHUB_OUTPUT}
+	@echo "git_tag=$(git_tag)" | tee  ${GITHUB_OUTPUT}
+	@echo "git_branch=$(git_branch)" | tee  ${GITHUB_OUTPUT}
+	@echo "commit_hash=$(commit_hash)" | tee  ${GITHUB_OUTPUT}
+	@echo "commit_timestamp=$(commit_timestamp)" | tee  ${GITHUB_OUTPUT}

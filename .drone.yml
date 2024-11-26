@@ -53,7 +53,7 @@ steps:
     image: golang:1.20.2-alpine3.16
     failure: ignore
     commands:
-      - go install honnef.co/go/tools/cmd/staticcheck@latest
+      - which staticcheck || go install honnef.co/go/tools/cmd/staticcheck@latest
       - staticcheck /drone/src
     volumes:
     - name: go-deps
@@ -83,8 +83,7 @@ steps:
       password:
         from_secret: docker_password
       tags:
-        - ${DRONE_TAG}
-        - ${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch
+        - ${DRONE_TAG:-${DRONE_BRANCH//\//_}-${DRONE_BUILD_NUMBER}-branch}
       repo: gitea.dxas90.xyz/${DRONE_REPO_NAMESPACE,,}/${DRONE_REPO_NAME,,}
       registry: gitea.dxas90.xyz
       expand-repo: false
@@ -108,14 +107,41 @@ environment:
 trigger:
   branch:
   - develop
+  - master
   event:
   - tag
   ref:
-  - refs/tags/^v[0-9]+\.[0-9]+\.[0-9]+/
-  - refs/tags/^v[0-9]+\.[0-9]+\.[0-9]+\-staging-.*/
+  - refs/tags/v[0-9]+\.[0-9]+\.[0-9]+/
+  - refs/tags/v[0-9]+\.[0-9]+\.[0-9]+\-staging-.*/
 
 steps:
   - name: Deploy Staging [DEPLOY]
     image: dxas90/drone-helper:v0.4.0
     commands:
       - echo "Deploy Staging ${DRONE_TAG}"
+
+---
+kind: pipeline
+type: docker
+name: learn-app-deploy-prod
+
+clone:
+  disable: true
+
+depends_on:
+  - learn-app-deploy-staging
+
+environment:
+  pipeline: learn-app-deploy-staging
+
+trigger:
+  event:
+  - promote
+  target:
+  - production
+
+steps:
+  - name: Deploy Production [DEPLOY]
+    image: dxas90/drone-helper:v0.4.0
+    commands:
+      - echo "Deploy Production ${DRONE_TAG}"

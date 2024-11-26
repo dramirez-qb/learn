@@ -38,7 +38,7 @@ spec:
             - "wget"
             - "-O"
             - "/secrets/ultrasecret.json"
-            - "https://httpbin.org/get?key=secret"
+            - "http://httpbin.org/get?key=secret"
           env:
             - name: MY_NAMESPACE
               valueFrom:

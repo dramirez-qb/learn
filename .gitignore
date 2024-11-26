@@ -629,3 +629,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# Ignore DevSpace cache and log folder
+.devspace/
