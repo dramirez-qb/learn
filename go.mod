@@ -1,6 +1,6 @@
 module learn
 
-go 1.17
+go 1.23
 
 require (
 	github.com/prometheus/client_golang v1.11.1
